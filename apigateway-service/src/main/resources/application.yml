@@ -1,0 +1,66 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+
+      #      CORS ??. ???????? ?????? ?? ???? ????, cors?? ???.
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - 'http://localhost:3000'
+
+            allowed-headers: '*'
+            allowed-methods: '*'
+            allow-credentials: true
+
+
+
+      routes:
+        - id: member-service
+          predicates:
+            - Path=/member-service/**
+          filters:
+            # StripPrefix : ??? ???? ???? member-service? http?? ??
+            - StripPrefix=1
+          uri: lb://member-service
+        - id: ordering-service
+          predicates:
+            - Path=/ordering-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://ordering-service
+        - id: product-service
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://product-service
+        - id: article-service
+          predicates:
+            - Path=/article-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://article-service
+jwt:
+  secretKey: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
+  issuer: growple-gateway
+  whitelist-paths:
+    - /api/auth/login
+    - /api/auth/signup
+    - /api/auth/refresh
+    - /api/health
+    - /actuator/**
+    - /swagger-ui/**
+    - /v3/api-docs/**
+
+# ??
+logging:
+  level:
+    com.grow.apigateway: DEBUG
+    org.springframework.cloud.gateway: INFO
