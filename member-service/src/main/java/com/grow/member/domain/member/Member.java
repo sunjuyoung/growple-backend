@@ -28,7 +28,7 @@ public class Member extends AbstractEntity {
     @NaturalId
     private Email email;
 
-    @Column(length = 255)
+    @Column(length = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +38,9 @@ public class Member extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private MemberStatus status = MemberStatus.ACTIVE;
+
+    @Column
+    private Boolean emailVerified = false;
 
     // ==================== 프로필 정보 ====================
 
@@ -53,7 +56,7 @@ public class Member extends AbstractEntity {
     // ==================== 포인트 & 레벨 시스템 ====================
 
     @Column(nullable = false)
-    private Integer point = 10_000; // 가입 시 기본 10,000P 지급
+    private Integer point = 1000; // 가입 시 기본 10,00P 지급
 
     @Column(nullable = false)
     private Integer activityScore = 0;
@@ -110,20 +113,35 @@ public class Member extends AbstractEntity {
     @Comment("수정일시")
     private LocalDateTime updatedAt;
 
-    @Column
-    @Comment("마지막 로그인 일시")
-    private LocalDateTime lastLoginAt;
-
 
     // ==================== 생성자 ====================
 
-    @Builder
-    public Member(String email, String password, String nickname) {
-        this.email = new Email(email);
-        this.password = password;
-        this.nickname = nickname;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+
+    public static Member register(MemberRegisterRequest request, PasswordEncoder passwordEncoder) {
+        LocalDateTime now = LocalDateTime.now();
+
+        Member member = new Member();
+
+        member.email = new Email(request.email());
+        member.password = passwordEncoder.encode(request.password());
+        member.nickname = request.nickname();
+        member.createdAt = now;
+        member.updatedAt = now;
+
+        return member;
+    }
+
+    public static Member socialRegister(String email,String nickname){
+        LocalDateTime now = LocalDateTime.now();
+
+        Member member = new Member();
+
+        member.email = new Email(email);
+        member.nickname = nickname;
+        member.createdAt = now;
+        member.updatedAt = now;
+
+        return member;
     }
 
     // ==================== 비즈니스 메서드 ====================
@@ -134,8 +152,12 @@ public class Member extends AbstractEntity {
     public void updateProfile(String nickname, String introduction, String profileImageUrl) {
         this.nickname = nickname;
         this.introduction = introduction;
-        this.profileImageUrl = profileImageUrl;
+        updateImage(profileImageUrl);
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateImage(String profileImageUrl){
+        this.profileImageUrl = profileImageUrl;
     }
 
     /**
@@ -262,19 +284,12 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     * 로그인 시간 갱신
-     */
-    public void updateLastLoginAt() {
-        this.lastLoginAt = LocalDateTime.now();
-    }
-
-    /**
      * 이메일 인증 완료
      */
-//    public void verifyEmail() {
-//        this.emailVerified = true;
-//        this.updatedAt = LocalDateTime.now();
-//    }
+    public void verifyEmail() {
+        this.emailVerified = true;
+        this.updatedAt = LocalDateTime.now();
+    }
 
     /**
      * 비밀번호 변경

@@ -1,6 +1,8 @@
 package com.grow.member.domain.member;
 
 
+import com.grow.member.adapter.security.GoogleUserInfo;
+import com.grow.member.application.member.provided.SocialUserInfo;
 import com.grow.member.domain.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,6 +63,21 @@ public class SocialAccount extends AbstractEntity {
         this.profileImageUrl = profileImageUrl;
         this.createdAt = LocalDateTime.now();
     }
+
+    public static SocialAccount of(SocialUserInfo socialUserInfo){
+        return SocialAccount.builder()
+                .providerId(socialUserInfo.id())
+                .email(socialUserInfo.email())
+                .name(socialUserInfo.name())
+                .provider(socialUserInfo.socialProvider())
+                .build();
+    }
+
+
+    public void settingProvider(SocialProvider provider) {
+        this.provider = provider;
+    }
+
 
     // Member 연관관계 설정 (패키지 레벨)
     void setMember(Member member) {
