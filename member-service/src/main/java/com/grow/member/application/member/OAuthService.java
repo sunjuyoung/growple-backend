@@ -1,13 +1,11 @@
 package com.grow.member.application.member;
 
-import com.grow.member.adapter.persistence.MemberJpaRepository;
-import com.grow.member.adapter.persistence.SocialAccountJpaRepository;
 import com.grow.member.adapter.security.*;
-import com.grow.member.adapter.webapi.dto.OAuthLoginResponse;
-import com.grow.member.application.member.provided.GoogleUserResponse;
-import com.grow.member.application.member.provided.KakaoUserResponse;
-import com.grow.member.application.member.provided.OAuthLogin;
-import com.grow.member.application.member.provided.SocialUserInfo;
+import com.grow.member.application.member.required.LoginResponse;
+import com.grow.member.application.member.required.GoogleUserResponse;
+import com.grow.member.application.member.required.KakaoUserResponse;
+import com.grow.member.application.member.required.OAuthLogin;
+import com.grow.member.application.member.required.SocialUserInfo;
 import com.grow.member.application.member.required.MemberRepository;
 import com.grow.member.application.member.required.SocialAccountRepository;
 import com.grow.member.domain.Email;
@@ -32,41 +30,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OAuthService implements OAuthLogin {
 
-    private final GoogleIdTokenValidator googleIdTokenValidator;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final SocialAccountRepository socialAccountRepository;
-
     private final RestTemplate restTemplate;
+    private final SocialMemberService socialMemberService;
 
 
     @Override
-    public OAuthLoginResponse socialLogin(String provider, String accessToken) {
+    public LoginResponse socialLogin(String provider, String accessToken) {
 
+        // 1. 소셜 토큰 검증 및 사용자 정보 조회
         SocialUserInfo socialUserInfo = verify(provider, accessToken);
 
-
-        Member member = socialAccountRepository
-                .findByProviderAndEmail(socialUserInfo.socialProvider(), socialUserInfo.email())
+        // 2. 기존 회원 조회 또는 신규 회원 가입
+        Member member = socialMemberService.findSocialMember(socialUserInfo.socialProvider(), socialUserInfo.email())
                 .map(SocialAccount::getMember)
                 .orElseGet(() -> registerNewMember(socialUserInfo));
 
-
+        // 3. JWT 토큰 발급
         TokenResponse tokens = jwtTokenProvider.generateTokens(member);
 
-        log.info("tokens: {}", tokens);
-
-        return OAuthLoginResponse.builder()
-                .accessToken(tokens.getAccessToken())
-                .refreshToken(tokens.getRefreshToken())
-                .expiresIn(tokens.getExpiresIn())
-                .tokenType(tokens.getTokenType())
-                .memberId(member.getId())
-                .email(member.getEmail().address())
-                .nickname(member.getNickname())
-                .profileImageUrl(member.getProfileImageUrl())
-                .isNewMember(false)
-                .build();
+        return LoginResponse.of(tokens, member);
     }
 
 
@@ -90,7 +75,6 @@ public class OAuthService implements OAuthLogin {
         );
 
         KakaoUserResponse body = response.getBody();
-        log.info("Kakao User Info: {}", body);
         return new SocialUserInfo(
                 body.getId().toString(),
                 body.getKakaoAccount().getEmail(),
@@ -112,7 +96,6 @@ public class OAuthService implements OAuthLogin {
         );
 
         GoogleUserResponse body = response.getBody();
-        log.info("Google User Info: {}", body);
         return new SocialUserInfo(
                 body.getId(),
                 body.getEmail(),

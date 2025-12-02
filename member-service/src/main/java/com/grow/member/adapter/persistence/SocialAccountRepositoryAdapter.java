@@ -14,8 +14,6 @@ public class SocialAccountRepositoryAdapter implements SocialAccountRepository {
 
     private final SocialAccountJpaRepository socialAccountJpaRepository;
 
-
-
     @Override
     public Optional<SocialAccount> findByProviderAndEmail(SocialProvider provider, String email) {
         return socialAccountJpaRepository.findByProviderAndEmail(provider, email);

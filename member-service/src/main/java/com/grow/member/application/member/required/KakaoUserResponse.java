@@ -1,4 +1,4 @@
-package com.grow.member.application.member.provided;
+package com.grow.member.application.member.required;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -1,8 +1,7 @@
 package com.grow.member.domain.member;
 
 
-import com.grow.member.adapter.security.GoogleUserInfo;
-import com.grow.member.application.member.provided.SocialUserInfo;
+import com.grow.member.application.member.required.SocialUserInfo;
 import com.grow.member.domain.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;

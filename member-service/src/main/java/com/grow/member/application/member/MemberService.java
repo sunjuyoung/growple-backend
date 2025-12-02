@@ -9,8 +9,10 @@ import com.grow.member.domain.member.MemberRegisterRequest;
 import com.grow.member.domain.member.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService implements MemberRegister {
 
@@ -24,11 +26,11 @@ public class MemberService implements MemberRegister {
 
         Member member = Member.register(request,passwordEncoder);
 
-        memberRepository.save(member);
+        Member saved = memberRepository.save(member);
 
         //todo 이메일 인증 서비스 연동
 
-        return member;
+        return saved;
     }
 
     private void checkDuplicateEmail(MemberRegisterRequest request) {

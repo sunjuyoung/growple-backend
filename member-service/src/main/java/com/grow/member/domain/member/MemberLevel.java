@@ -6,15 +6,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MemberLevel {
-    NEWCOMER("새내기", 0, 99, "🌱"),
-    PASSIONATE("열정러", 100, 299, "🔥"),
-    EXPERT("고수", 300, 599, "⭐"),
-    MASTER("마스터", 600, Integer.MAX_VALUE, "👑");
+    NEWCOMER("새내기", 0, 99, 1),
+    PASSIONATE("열정러", 100, 299, 2),
+    EXPERT("고수", 300, 599, 3),
+    MASTER("마스터", 600, Integer.MAX_VALUE, 4);
 
     private final String title;
     private final int minScore;
     private final int maxScore;
-    private final String icon;
+    private final int level;
 
     /**
      * 활동 점수에 따른 레벨 반환

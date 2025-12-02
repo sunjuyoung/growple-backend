@@ -124,7 +124,7 @@ public class Member extends AbstractEntity {
 
         member.email = new Email(request.email());
         member.password = passwordEncoder.encode(request.password());
-        member.nickname = request.nickname();
+        member.nickname = request.name();
         member.createdAt = now;
         member.updatedAt = now;
 
