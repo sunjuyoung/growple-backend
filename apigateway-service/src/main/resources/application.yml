@@ -31,12 +31,12 @@ spring:
             - StripPrefix=1
           uri: lb://member-service
 
-        - id: ordering-service
+        - id: study-service
           predicates:
-            - Path=/ordering-service/**
+            - Path=/study-service/**
           filters:
             - StripPrefix=1
-          uri: lb://ordering-service
+          uri: lb://study-service
 
         - id: product-service
           predicates:

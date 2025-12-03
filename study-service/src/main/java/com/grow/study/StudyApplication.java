@@ -1,13 +1,14 @@
-package com.grow.discovery;
+package com.grow.study;
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DiscoveryServiceApplication {
+public class StudyApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DiscoveryServiceApplication.class, args);
+        SpringApplication.run(StudyApplication.class, args);
     }
 
 }

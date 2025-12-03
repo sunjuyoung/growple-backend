@@ -26,11 +26,9 @@ public class MemberService implements MemberRegister {
 
         Member member = Member.register(request,passwordEncoder);
 
-        Member saved = memberRepository.save(member);
+        return memberRepository.save(member);
 
         //todo 이메일 인증 서비스 연동
-
-        return saved;
     }
 
     private void checkDuplicateEmail(MemberRegisterRequest request) {
