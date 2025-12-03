@@ -1,4 +1,4 @@
-package com.grow.member.adapter.security;
+package com.grow.member.application.member.required;
 
 import lombok.Builder;
 import lombok.Getter;

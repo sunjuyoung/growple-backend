@@ -37,7 +37,6 @@ public class AuthApi {
     public ResponseEntity<MemberRegisterResponse> registerMember(
             @RequestBody MemberRegisterRequest request) {
 
-        log.info(request.toString());
         Member member = memberRegister.register(request);
 
         return new ResponseEntity<>(MemberRegisterResponse.of(member), HttpStatus.CREATED);

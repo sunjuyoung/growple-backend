@@ -1,6 +1,5 @@
 package com.grow.member.application.member.required;
 
-import com.grow.member.adapter.security.TokenResponse;
 import com.grow.member.domain.member.Member;
 import lombok.Builder;
 import lombok.Data;

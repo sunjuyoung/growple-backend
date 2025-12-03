@@ -1,26 +1,15 @@
 package com.grow.member.application.member;
 
-import com.grow.member.adapter.security.*;
-import com.grow.member.application.member.required.LoginResponse;
-import com.grow.member.application.member.required.GoogleUserResponse;
-import com.grow.member.application.member.required.KakaoUserResponse;
-import com.grow.member.application.member.required.OAuthLogin;
-import com.grow.member.application.member.required.SocialUserInfo;
-import com.grow.member.application.member.required.MemberRepository;
-import com.grow.member.application.member.required.SocialAccountRepository;
+import com.grow.member.application.member.required.*;
 import com.grow.member.domain.Email;
 import com.grow.member.domain.member.Member;
 import com.grow.member.domain.member.SocialAccount;
 import com.grow.member.domain.member.SocialProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -30,11 +19,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OAuthService implements OAuthLogin {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final SocialAccountRepository socialAccountRepository;
-    private final RestTemplate restTemplate;
     private final SocialMemberService socialMemberService;
+    private final SocialApiPort socialApiPort;
 
 
     @Override
@@ -49,7 +38,7 @@ public class OAuthService implements OAuthLogin {
                 .orElseGet(() -> registerNewMember(socialUserInfo));
 
         // 3. JWT 토큰 발급
-        TokenResponse tokens = jwtTokenProvider.generateTokens(member);
+        TokenResponse tokens = tokenProvider.generateTokens(member);
 
         return LoginResponse.of(tokens, member);
     }
@@ -64,15 +53,8 @@ public class OAuthService implements OAuthLogin {
     }
 
     private SocialUserInfo getKakaoUserInfo(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
 
-        ResponseEntity<KakaoUserResponse> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                KakaoUserResponse.class
-        );
+        ResponseEntity<KakaoUserResponse> response = socialApiPort.getKakaoUserInfo(accessToken);
 
         KakaoUserResponse body = response.getBody();
         return new SocialUserInfo(
@@ -85,15 +67,8 @@ public class OAuthService implements OAuthLogin {
     }
 
     private SocialUserInfo getGoogleUserInfo(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
 
-        ResponseEntity<GoogleUserResponse> response = restTemplate.exchange(
-                "https://www.googleapis.com/oauth2/v2/userinfo",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                GoogleUserResponse.class
-        );
+        ResponseEntity<GoogleUserResponse> response = socialApiPort.getGoogleUserInfo(accessToken);
 
         GoogleUserResponse body = response.getBody();
         return new SocialUserInfo(
@@ -106,15 +81,13 @@ public class OAuthService implements OAuthLogin {
     }
 
 
-
-
     /**
      * 신규 회원 가입 (소셜)
      */
     private Member registerNewMember(SocialUserInfo socialUserInfo) {
-        // 이메일로 기존 회원 조회 (다른 소셜 계정으로 가입한 경우)
-        Email email = new Email(socialUserInfo.email());
 
+        Email email = new Email(socialUserInfo.email());
+        // 이메일로 기존 회원 조회 (다른 소셜 계정으로 가입한 경우)
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> createNewMember(socialUserInfo));
 

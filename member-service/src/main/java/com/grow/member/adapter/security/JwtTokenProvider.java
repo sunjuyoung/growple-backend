@@ -1,5 +1,7 @@
 package com.grow.member.adapter.security;
 
+import com.grow.member.application.member.required.TokenProvider;
+import com.grow.member.application.member.required.TokenResponse;
 import com.grow.member.domain.member.Member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     private final JwtProperties jwtProperties;
     private SecretKey secretKey;
@@ -65,6 +67,7 @@ public class JwtTokenProvider {
     /**
      * TokenResponse 생성
      */
+    @Override
     public TokenResponse generateTokens(Member member) {
         return TokenResponse.builder()
                 .accessToken(generateAccessToken(member))

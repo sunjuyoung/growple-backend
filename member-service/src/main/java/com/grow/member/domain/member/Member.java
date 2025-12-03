@@ -322,4 +322,7 @@ public class Member extends AbstractEntity {
         return this.status == MemberStatus.ACTIVE;
     }
 
+    public boolean verifyPassword(String password, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password, this.password);
+    }
 }
