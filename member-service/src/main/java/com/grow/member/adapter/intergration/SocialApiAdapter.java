@@ -1,4 +1,4 @@
-package com.grow.member.adapter.webapi;
+package com.grow.member.adapter.intergration;
 
 import com.grow.member.application.member.required.GoogleUserResponse;
 import com.grow.member.application.member.required.KakaoUserResponse;
