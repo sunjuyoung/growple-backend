@@ -1,5 +1,6 @@
 package com.grow.member.adapter;
 
+import com.grow.member.application.InvalidTokenException;
 import com.grow.member.domain.member.DuplicationEmailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -20,6 +21,11 @@ public class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DuplicationEmailException.class)
     public ProblemDetail emailExceptionHandler(DuplicationEmailException exception){
         return getProblemDetail(HttpStatus.CONFLICT,exception);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ProblemDetail invalidTokenExceptionHandler(InvalidTokenException exception){
+        return getProblemDetail(HttpStatus.UNAUTHORIZED,exception);
     }
 
     private static ProblemDetail getProblemDetail(HttpStatus status,Exception exception) {

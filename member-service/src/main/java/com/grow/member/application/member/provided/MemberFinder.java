@@ -8,9 +8,8 @@ import java.util.Optional;
 
 public interface MemberFinder {
 
-    LoginResponse findLoginMember(String email, String password);
-
     Member findMember(Long memberId);
 
     Member findMember(String email);
+
 }

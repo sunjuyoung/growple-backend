@@ -24,6 +24,7 @@ public class OAuthService implements OAuthLogin {
     private final SocialAccountRepository socialAccountRepository;
     private final SocialMemberService socialMemberService;
     private final SocialApiPort socialApiPort;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 
     @Override
@@ -39,6 +40,7 @@ public class OAuthService implements OAuthLogin {
 
         // 3. JWT 토큰 발급
         TokenResponse tokens = tokenProvider.generateTokens(member);
+
 
         return LoginResponse.of(tokens, member);
     }
