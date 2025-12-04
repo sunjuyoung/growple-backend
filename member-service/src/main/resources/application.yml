@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/growple?currentSchema=public
+    url: ${SPRING_DATASOURCE_URL}/growple?currentSchema=public
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jackson:
@@ -25,13 +25,17 @@ spring:
           time_zone: Asia/Seoul
     show-sql: true
 
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 # JWT 설정
 jwt:
   secret-key: ${JWT_SECRET_KEY:your-256-bit-secret-key-here-must-be-at-least-32-characters}
-  access-token-expiration: 1800000    # 30분 (밀리초)
+  access-token-expiration: 180000000    # 30분 (밀리초)
   refresh-token-expiration: 604800000 # 7일 (밀리초)
+  refresh-token-ttl-days: 7  # Redis에 저장할 리프레시 토큰의 TTL (일 단위)
 
 # OAuth 설정
 oauth:

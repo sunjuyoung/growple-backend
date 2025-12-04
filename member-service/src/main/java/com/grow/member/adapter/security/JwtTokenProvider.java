@@ -3,6 +3,7 @@ package com.grow.member.adapter.security;
 import com.grow.member.application.member.required.TokenProvider;
 import com.grow.member.application.member.required.TokenResponse;
 import com.grow.member.domain.member.Member;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -75,5 +76,17 @@ public class JwtTokenProvider implements TokenProvider {
                 .expiresIn(jwtProperties.getAccessTokenExpiration() / 1000) // 초 단위
                 .tokenType("Bearer")
                 .build();
+    }
+
+    // 사용자 ID 추출
+    public Long getUserId(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)      // 0.12.x에서는 verifyWith() 사용
+                .build()
+                .parseSignedClaims(token)   // parseClaimsJws() → parseSignedClaims()
+                .getPayload();
+
+         return Long.parseLong(claims.get("userId").toString());
     }
 }
