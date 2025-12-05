@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -320,5 +321,60 @@ public class Study extends AbstractEntity {
      */
     public boolean isLeader(Long memberId) {
         return this.leaderId.equals(memberId);
+    }
+
+    /**
+     * 스터디 세션 생성
+     * 스터디 일정과 총 세션 수에 따라 세션들을 자동 생성합니다.
+     */
+    public void createSessions(Integer totalSessions) {
+        if (totalSessions == null || totalSessions <= 0) {
+            return;
+        }
+
+        LocalDate currentDate = this.schedule.getStartDate();
+        LocalDate endDate = this.schedule.getEndDate();
+        int sessionNumber = 1;
+
+        while (sessionNumber <= totalSessions && !currentDate.isAfter(endDate)) {
+            // 현재 날짜의 요일 확인
+            DayOfWeek dayOfWeek = DayOfWeek.from(currentDate.getDayOfWeek());
+
+            // 스터디 진행 요일인 경우 세션 생성
+            if (this.schedule.isStudyDay(dayOfWeek)) {
+                Session session = Session.createFromSchedule(this, sessionNumber, currentDate);
+                this.sessions.add(session);
+                sessionNumber++;
+            }
+
+            // 다음 날로 이동
+            currentDate = currentDate.plusDays(1);
+        }
+    }
+
+    /**
+     * 스터디장을 멤버로 추가
+     */
+    public void addLeaderAsMember() {
+        StudyMember leader = StudyMember.createLeader(this, this.leaderId);
+        this.members.add(leader);
+        this.currentParticipants = 1;
+    }
+
+    /**
+     * 멤버 추가 (스터디장 제외)
+     */
+    public void addMember(Long memberId, Integer depositAmount) {
+        // 이미 참가한 멤버인지 확인
+        boolean alreadyMember = this.members.stream()
+                .anyMatch(m -> m.getMemberId().equals(memberId) && m.isActive());
+
+        if (alreadyMember) {
+            throw new IllegalStateException("이미 참가한 멤버입니다.");
+        }
+
+        StudyMember member = StudyMember.createMember(this, memberId, depositAmount);
+        this.members.add(member);
+        addParticipant();
     }
 }

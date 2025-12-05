@@ -14,8 +14,15 @@ spring:
               - 'http://localhost:3000'
               - 'http://localhost:3001'
             allowed-headers: '*'
-            allowed-methods: '*'
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
             allow-credentials: true
+            exposed-headers:
+              - Set-Cookie
 
       routes:
         # 인증 API (member-service로 라우팅)

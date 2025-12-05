@@ -28,4 +28,14 @@ public enum DayOfWeek {
             case SUNDAY -> SUNDAY;
         };
     }
+
+    //shortName 으로부터 DayOfWeek 찾기
+    public static DayOfWeek fromShortName(String shortName) {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (day.getShortName().equals(shortName)) {
+                return day;
+            }
+        }
+        throw new IllegalArgumentException("Invalid short name for DayOfWeek: " + shortName);
+    }
 }

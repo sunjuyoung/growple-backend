@@ -22,4 +22,13 @@ public enum StudyLevel {
         }
         throw new IllegalArgumentException("Invalid level: " + value);
     }
+
+    public static StudyLevel fromDisplayName(String displayName) {
+        for (StudyLevel level : values()) {
+            if (level.displayName.equals(displayName)) {
+                return level;
+            }
+        }
+        throw new IllegalArgumentException("Invalid level displayName: " + displayName);
+    }
 }

@@ -23,4 +23,13 @@ public enum StudyCategory {
         }
         throw new IllegalArgumentException("Invalid category: " + value);
     }
+
+    public static StudyCategory fromDisplayName(String displayName) {
+        for (StudyCategory category : values()) {
+            if (category.displayName.equals(displayName)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("Invalid category displayName: " + displayName);
+    }
 }

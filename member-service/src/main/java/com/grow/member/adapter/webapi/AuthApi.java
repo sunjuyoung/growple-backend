@@ -56,15 +56,12 @@ public class AuthApi {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request,
-            @CookieValue(name = "deviceId", required = false) String deviceId,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse
             ) {
-
-        if (deviceId == null) {
-            deviceId = deviceIdManager.generate();
+            String deviceId = deviceIdManager.generate();
             deviceIdManager.addCookie(httpResponse, deviceId);
-        }
+
 
         String userAgent = httpRequest.getHeader("User-Agent");
         String ip = getClientIp(httpRequest);
@@ -84,8 +81,10 @@ public class AuthApi {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @RequestBody LogoutRequest request,
-            @CookieValue(name = "deviceId") String deviceId) {
+            @CookieValue(name = "deviceId", required = false) String deviceId) {
 
+        log.info("deviceId during logout: {}", deviceId);
+        log.info("memberId during logout: {}", request.memberId);
         memberAuth.logout(request.memberId, deviceId);
         return ResponseEntity.noContent().build();
     }
