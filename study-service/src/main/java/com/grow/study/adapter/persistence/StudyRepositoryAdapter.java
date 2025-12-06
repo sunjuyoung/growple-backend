@@ -1,7 +1,7 @@
 package com.grow.study.adapter.persistence;
 
 import com.grow.study.application.required.StudyRepository;
-import com.grow.study.application.required.StudyWithMemberCountDto;
+import com.grow.study.application.required.dto.StudyWithMemberCountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

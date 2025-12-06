@@ -1,4 +1,4 @@
-package com.grow.study.application.provided;
+package com.grow.study.application.provided.dto;
 
 import com.grow.study.domain.study.Study;
 import lombok.AllArgsConstructor;

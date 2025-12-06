@@ -1,5 +1,6 @@
 package com.grow.study.application.provided;
 
+import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
 import org.springframework.web.multipart.MultipartFile;
 

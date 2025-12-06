@@ -1,8 +1,7 @@
 package com.grow.study.adapter.webapi;
 
-import com.grow.study.adapter.security.JwtTokenProvider;
 import com.grow.study.application.provided.StudyRegister;
-import com.grow.study.application.provided.StudyRegisterResponse;
+import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,29 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class StudyApi {
 
     private final StudyRegister studyRegister;
-    private final JwtTokenProvider jwtTokenProvider;
-
-
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<StudyRegisterResponse> createStudy(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestHeader("X-User-Id") Long userId,
             @Valid @ModelAttribute StudyRegisterRequest request,
             @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail
     ) {
-        // JWT 토큰에서 사용자 ID 추출
-        String token = jwtTokenProvider.extractToken(authorizationHeader);
-        Long leaderId = jwtTokenProvider.getUserId(token);
-
-        // 스터디 개설
-       StudyRegisterResponse response = studyRegister.register(request, thumbnail, leaderId);
+       StudyRegisterResponse response = studyRegister.register(request, thumbnail, userId);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StudyRegisterResponse> getStudy(@PathVariable Long id) {
-        // Implementation for retrieving study details by ID would go here
-        return ResponseEntity.ok().build();
-    }
+
 }

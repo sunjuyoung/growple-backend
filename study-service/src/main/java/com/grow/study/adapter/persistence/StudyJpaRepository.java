@@ -1,6 +1,6 @@
 package com.grow.study.adapter.persistence;
 
-import com.grow.study.application.required.StudyWithMemberCountDto;
+import com.grow.study.application.required.dto.StudyWithMemberCountDto;
 import com.grow.study.domain.study.Study;
 import com.grow.study.domain.study.StudyCategory;
 import com.grow.study.domain.study.StudyStatus;
@@ -18,7 +18,7 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
 
 
     @Query("""
-        SELECT new com.grow.study.application.required.StudyWithMemberCountDto(
+        SELECT new com.grow.study.application.required.dto.StudyWithMemberCountDto(
             s, 
             COUNT(sm)
         )

@@ -102,6 +102,9 @@ public class Study extends AbstractEntity {
 
     // ==================== 감사(Audit) 정보 ====================
 
+    //모집 마감일
+    private LocalDate recruitmentEndDate;  // 모집 마감일
+
     @Column(nullable = false, updatable = false)
     @Comment("개설일시")
     private LocalDateTime createdAt;

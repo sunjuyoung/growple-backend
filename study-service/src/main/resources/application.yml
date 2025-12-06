@@ -35,8 +35,6 @@ cloud:
     s3:
       bucket: ${AWS_BUCKET_NAME}
 
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
 
 
 eureka:

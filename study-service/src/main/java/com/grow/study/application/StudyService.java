@@ -2,7 +2,7 @@ package com.grow.study.application;
 
 import com.grow.study.adapter.persistence.StudyJpaRepository;
 import com.grow.study.application.provided.StudyRegister;
-import com.grow.study.application.provided.StudyRegisterResponse;
+import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.domain.study.*;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
 import com.grow.study.adapter.intergration.S3Service;

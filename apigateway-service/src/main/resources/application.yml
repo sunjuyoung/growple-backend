@@ -25,12 +25,6 @@ spring:
               - Set-Cookie
 
       routes:
-        # 인증 API (member-service로 라우팅)
-        - id: auth-service
-          predicates:
-            - Path=/api/auth/**
-          uri: lb://member-service
-
         - id: member-service
           predicates:
             - Path=/member-service/**
