@@ -44,6 +44,10 @@ public class StudySchedule {
     @Comment("스터디 종료 시간")
     private LocalTime endTime;
 
+    @Column(nullable = false)
+    @Comment("모집 종료일")
+    private LocalDate recruitEndDate;
+
     @ElementCollection
     @CollectionTable(
             name = "study_schedule_days",

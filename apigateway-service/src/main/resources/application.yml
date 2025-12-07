@@ -2,6 +2,17 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  swagger-ui:
+    urls:
+      - url: /member-service/v3/api-docs
+        name: Member-Service
+      - url: /study-service/v3/api-docs
+        name: Study-Service
+
+
+
 spring:
   application:
     name: apigateway-service
@@ -23,6 +34,8 @@ spring:
             allow-credentials: true
             exposed-headers:
               - Set-Cookie
+
+
 
       routes:
         - id: member-service
@@ -52,6 +65,10 @@ spring:
           filters:
             - StripPrefix=1
           uri: lb://article-service
+
+
+
+
 
 jwt:
   secretKey: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5

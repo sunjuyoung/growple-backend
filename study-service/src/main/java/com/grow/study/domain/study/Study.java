@@ -102,8 +102,6 @@ public class Study extends AbstractEntity {
 
     // ==================== 감사(Audit) 정보 ====================
 
-    //모집 마감일
-    private LocalDate recruitmentEndDate;  // 모집 마감일
 
     @Column(nullable = false, updatable = false)
     @Comment("개설일시")
@@ -120,6 +118,7 @@ public class Study extends AbstractEntity {
     @Column
     @Comment("종료일시 (스터디 완료)")
     private LocalDateTime completedAt;
+
 
     // ==================== 생성자 ====================
 
@@ -175,6 +174,11 @@ public class Study extends AbstractEntity {
         if (depositAmount < 5_000 || depositAmount > 50_000) {
             throw new IllegalArgumentException("보증금은 5,000P ~ 50,000P 사이여야 합니다.");
         }
+        if( schedule.getEndDate().isBefore(schedule.getStartDate())) {
+            throw new IllegalArgumentException("종료일은 시작일 이후여야 합니다.");
+        }
+
+
     }
 
     /**

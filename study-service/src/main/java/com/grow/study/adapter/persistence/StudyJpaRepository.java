@@ -24,6 +24,7 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
         )
         FROM Study s
         LEFT JOIN StudyMember sm ON sm.study = s AND sm.status = 'ACTIVE'
+        LEFT JOIN FETCH s.schedule
         WHERE s.id = :studyId
         GROUP BY s
         """)

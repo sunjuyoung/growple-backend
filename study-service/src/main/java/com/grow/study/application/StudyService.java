@@ -54,6 +54,7 @@ public class StudyService implements StudyRegister {
                     LocalDate.parse(request.getEndDate()),
                     LocalTime.parse(request.getStartTime()),
                     LocalTime.parse(request.getEndTime()),
+                    LocalDate.parse(request.getStartDate()).minusDays(1),
                     daysOfWeek
             );
 

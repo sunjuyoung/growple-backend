@@ -1,10 +1,17 @@
 server:
   port: 8081
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true  # 개별 서비스 UI는 false로 해도 됨
 
 spring:
   application:
     name: member-service
+
+
 
 
   datasource:
@@ -29,6 +36,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+
 
 # JWT 설정
 jwt:

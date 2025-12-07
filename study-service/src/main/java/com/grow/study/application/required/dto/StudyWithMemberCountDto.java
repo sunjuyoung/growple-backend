@@ -12,4 +12,5 @@ public class StudyWithMemberCountDto {
 
     Study study;
     Long memberCount;
+
 }
