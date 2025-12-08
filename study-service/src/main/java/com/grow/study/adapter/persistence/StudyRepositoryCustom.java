@@ -1,23 +1,12 @@
-package com.grow.study.application.required;
+package com.grow.study.adapter.persistence;
 
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
 import com.grow.study.adapter.persistence.dto.StudySearchCondition;
-import com.grow.study.application.required.dto.StudyWithMemberCountDto;
-import com.grow.study.domain.study.Study;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
-public interface StudyRepository {
-
-  //  Optional<StudyWithMemberCountDto> findWithMemberCount(@Param("studyId") Long studyId);
-
-    Optional<Study> findWithSchedule(@Param("studyId") Long studyId);
-
-    Long countActiveMembers(@Param("studyId") Long studyId);
+public interface StudyRepositoryCustom {
 
     Page<StudyListResponse> searchStudyList(StudySearchCondition condition, Pageable pageable);
 

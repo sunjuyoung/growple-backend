@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 public class StudyWithMemberCountDto {
 
     Study study;
-    Long memberCount;
+   // Long memberCount;
 
+    public static StudyWithMemberCountDto of(Study study) {
+        return new StudyWithMemberCountDto(study);
+    }
 }

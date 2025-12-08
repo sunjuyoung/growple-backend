@@ -1,6 +1,7 @@
 package com.grow.study.application;
 
 import com.grow.study.adapter.persistence.StudyJpaRepository;
+import com.grow.study.adapter.persistence.StudyMemberJpaRepository;
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.domain.study.*;
@@ -25,6 +26,7 @@ public class StudyService implements StudyRegister {
 
     private final StudyJpaRepository studyJpaRepository;
     private final S3Service s3Service;
+    private final StudyMemberJpaRepository studyMemberJpaRepository;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
@@ -89,4 +91,36 @@ public class StudyService implements StudyRegister {
 
         return StudyRegisterResponse.from(savedStudy);
     }
+
+    @Override
+    public void enrollment(Long studyId, Long memberId, Integer depositAmount) {
+
+        Study study = studyJpaRepository.findStudiesById(studyId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
+
+        // 1. 참여 가능 여부 검증
+        if (!study.isJoinable()) {
+            throw new IllegalStateException("참여할 수 없는 스터디입니다.");
+        }
+
+        // 2. 스터디장 본인 참여 방지
+        if (study.isLeader(memberId)) {
+            throw new IllegalStateException("스터디장은 이미 참여 중입니다.");
+        }
+
+        // 3. 보증금 일치 여부 확인
+        if (!study.getDepositAmount().equals(depositAmount)) {
+            throw new IllegalArgumentException("보증금이 일치하지 않습니다.");
+        }
+
+        // 4. 멤버 추가 (내부에서 중복 체크)
+        study.addMember(memberId, depositAmount);
+
+        //todo payment 서비스 연동(예정)
+
+        studyJpaRepository.save(study);
+
+
+    }
+
 }

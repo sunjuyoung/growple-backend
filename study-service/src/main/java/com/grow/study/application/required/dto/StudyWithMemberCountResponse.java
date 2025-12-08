@@ -1,9 +1,5 @@
 package com.grow.study.application.required.dto;
 
-import com.grow.study.domain.study.DayOfWeek;
-import com.grow.study.domain.study.StudyCategory;
-import com.grow.study.domain.study.StudyLevel;
-import com.grow.study.domain.study.StudyStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,7 +24,7 @@ public record StudyWithMemberCountResponse(
         Integer currentParticipants,
         Integer depositAmount,
         String studyStatus,
-        Long memberCount,
+        Integer memberCount,
         Long userId,
         String nickname,
         String profileImageUrl,
@@ -65,8 +61,7 @@ public record StudyWithMemberCountResponse(
                 dto.study.getCurrentParticipants(),
                 dto.study.getDepositAmount(),
                 dto.study.getStatus().getDisplayName(),
-                dto.memberCount,
-
+                dto.study.getCurrentParticipants(),
                 memberSummaryResponse.id(),
                 memberSummaryResponse.nickname(),
                 memberSummaryResponse.profileImageUrl(),

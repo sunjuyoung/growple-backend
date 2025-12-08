@@ -5,6 +5,7 @@ import com.grow.study.domain.study.Study;
 import com.grow.study.domain.study.StudyCategory;
 import com.grow.study.domain.study.StudyStatus;
 import com.grow.study.domain.study.StudyVisibility;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,39 +15,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface StudyJpaRepository extends JpaRepository<Study, Long> {
-
+public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRepositoryCustom {
 
     @Query("""
-        SELECT new com.grow.study.application.required.dto.StudyWithMemberCountDto(
-            s, 
-            COUNT(sm)
-        )
-        FROM Study s
-        LEFT JOIN StudyMember sm ON sm.study = s AND sm.status = 'ACTIVE'
-        LEFT JOIN FETCH s.schedule
-        WHERE s.id = :studyId
-        GROUP BY s
-        """)
-    Optional<StudyWithMemberCountDto> findWithMemberCount(@Param("studyId") Long studyId);
+    SELECT s FROM Study s
+    LEFT JOIN FETCH s.schedule.daysOfWeek
+    WHERE s.id = :studyId
+    """)
+    Optional<Study> findWithSchedule(@Param("studyId") Long studyId);
 
-    /**
-     * 리더 ID로 스터디 목록 조회
-     */
-    List<Study> findByLeaderId(Long leaderId);
+    // 2. Member Count 별도 조회
+    @Query("""
+    SELECT COUNT(sm) FROM StudyMember sm
+    WHERE sm.study.id = :studyId AND sm.status = 'ACTIVE'
+    """)
+    Long countActiveMembers(@Param("studyId") Long studyId);
 
-    /**
-     * 카테고리로 스터디 목록 조회
-     */
-    List<Study> findByCategory(StudyCategory category);
-
-    /**
-     * 상태로 스터디 목록 조회
-     */
-    List<Study> findByStatus(StudyStatus status);
-
-    /**
-     * 공개 여부로 스터디 목록 조회
-     */
-    List<Study> findByVisibility(StudyVisibility visibility);
+    @EntityGraph(attributePaths = {"members"})
+    Optional<Study> findStudiesById(Long studyId);
 }

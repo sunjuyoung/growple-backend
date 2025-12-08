@@ -15,7 +15,13 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "studies")
+@Table(name = "studies", indexes = {
+        @Index(name = "idx_study_created_at_id", columnList = "createdAt DESC, id DESC"),
+        @Index(name = "idx_study_start_date_id", columnList = "startDate ASC, id ASC"),
+        @Index(name = "idx_study_category", columnList = "category"),
+        @Index(name = "idx_study_level", columnList = "level"),
+        @Index(name = "idx_study_deposit_amount", columnList = "depositAmount")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Study extends AbstractEntity {
@@ -155,6 +161,7 @@ public class Study extends AbstractEntity {
         this.leaderMessage = leaderMessage;
         this.createdAt = now;
         this.updatedAt = now;
+        this.currentParticipants = 1;
 
         validateStudy();
     }

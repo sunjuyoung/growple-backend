@@ -1,8 +1,14 @@
 package com.grow.study.adapter.persistence;
 
+import com.grow.study.adapter.persistence.dto.CursorResult;
+import com.grow.study.adapter.persistence.dto.StudyListResponse;
+import com.grow.study.adapter.persistence.dto.StudySearchCondition;
 import com.grow.study.application.required.StudyRepository;
 import com.grow.study.application.required.dto.StudyWithMemberCountDto;
+import com.grow.study.domain.study.Study;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,8 +19,30 @@ public class StudyRepositoryAdapter implements StudyRepository {
 
     private final StudyJpaRepository studyJpaRepository;
 
+//    @Override
+//    public Optional<StudyWithMemberCountDto> findWithMemberCount(Long studyId) {
+//        return studyJpaRepository.findWithMemberCount(studyId);
+//    }
+
     @Override
-    public Optional<StudyWithMemberCountDto> findWithMemberCount(Long studyId) {
-        return studyJpaRepository.findWithMemberCount(studyId);
+    public Optional<Study> findWithSchedule(Long studyId) {
+        return studyJpaRepository.findWithSchedule(studyId);
     }
+
+    @Override
+    public Long countActiveMembers(Long studyId) {
+        return studyJpaRepository.countActiveMembers(studyId);
+    }
+
+    @Override
+    public Page<StudyListResponse> searchStudyList(StudySearchCondition condition, Pageable pageable) {
+        return studyJpaRepository.searchStudyList(condition, pageable);
+    }
+
+    @Override
+    public CursorResult<StudyListResponse> searchStudyListByCursor(StudySearchCondition condition, String cursor, int size) {
+        return studyJpaRepository.searchStudyListByCursor(condition, cursor, size);
+    }
+
+
 }

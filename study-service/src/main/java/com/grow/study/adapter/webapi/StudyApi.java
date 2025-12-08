@@ -1,5 +1,6 @@
 package com.grow.study.adapter.webapi;
 
+import com.grow.study.adapter.webapi.dto.StudyEnrollmentRequest;
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
@@ -63,5 +64,13 @@ public class StudyApi {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping(value = "/enroll")
+    public ResponseEntity<Long> enrollmentStudy(
+            @RequestBody StudyEnrollmentRequest request
+            ) {
+        studyRegister.enrollment(request.studyId(), request.userId(),  request.depositAmount());
+
+        return new ResponseEntity<>(request.studyId(), HttpStatus.OK);
+    }
 
 }

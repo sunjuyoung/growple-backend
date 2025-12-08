@@ -8,4 +8,6 @@ public interface StudyRegister {
 
     StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId);
 
+     void enrollment(Long studyId, Long memberId, Integer depositAmount);
+
 }
