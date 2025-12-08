@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface StudyRepository {
 
-  //  Optional<StudyWithMemberCountDto> findWithMemberCount(@Param("studyId") Long studyId);
+    Optional<Study> findStudiesById(Long studyId);
 
     Optional<Study> findWithSchedule(@Param("studyId") Long studyId);
 
@@ -22,4 +22,7 @@ public interface StudyRepository {
     Page<StudyListResponse> searchStudyList(StudySearchCondition condition, Pageable pageable);
 
     CursorResult<StudyListResponse> searchStudyListByCursor(StudySearchCondition condition, String cursor, int size);
+
+    Study save(Study study);
+
 }

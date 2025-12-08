@@ -1,5 +1,6 @@
 package com.grow.study.adapter.intergration;
 
+import com.grow.study.application.required.S3FileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class S3Service implements S3FileUpload {
 
     private final S3Client s3Client;
 
@@ -29,6 +30,7 @@ public class S3Service {
      * @param path S3 내 저장 경로 (예: "images/study")
      * @return S3에 저장된 파일의 URL
      */
+    @Override
     public String uploadImage(MultipartFile file, String path) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("업로드할 파일이 없습니다.");

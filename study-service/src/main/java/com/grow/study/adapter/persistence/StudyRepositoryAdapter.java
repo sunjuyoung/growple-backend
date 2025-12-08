@@ -19,10 +19,11 @@ public class StudyRepositoryAdapter implements StudyRepository {
 
     private final StudyJpaRepository studyJpaRepository;
 
-//    @Override
-//    public Optional<StudyWithMemberCountDto> findWithMemberCount(Long studyId) {
-//        return studyJpaRepository.findWithMemberCount(studyId);
-//    }
+
+    @Override
+    public Optional<Study> findStudiesById(Long studyId) {
+        return studyJpaRepository.findStudiesById(studyId);
+    }
 
     @Override
     public Optional<Study> findWithSchedule(Long studyId) {
@@ -42,6 +43,11 @@ public class StudyRepositoryAdapter implements StudyRepository {
     @Override
     public CursorResult<StudyListResponse> searchStudyListByCursor(StudySearchCondition condition, String cursor, int size) {
         return studyJpaRepository.searchStudyListByCursor(condition, cursor, size);
+    }
+
+    @Override
+    public Study save(Study study) {
+        return studyJpaRepository.save(study);
     }
 
 

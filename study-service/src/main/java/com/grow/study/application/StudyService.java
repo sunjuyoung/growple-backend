@@ -1,12 +1,12 @@
 package com.grow.study.application;
 
-import com.grow.study.adapter.persistence.StudyJpaRepository;
-import com.grow.study.adapter.persistence.StudyMemberJpaRepository;
+
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.study.application.provided.dto.StudyRegisterResponse;
+import com.grow.study.application.required.S3FileUpload;
+import com.grow.study.application.required.StudyRepository;
 import com.grow.study.domain.study.*;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
-import com.grow.study.adapter.intergration.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class StudyService implements StudyRegister {
 
-    private final StudyJpaRepository studyJpaRepository;
-    private final S3Service s3Service;
-    private final StudyMemberJpaRepository studyMemberJpaRepository;
+    private final S3FileUpload s3FileUpload;
+    private final StudyRepository studyRepository;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
 
             String thumbnailUrl = null;
             if (thumbnail != null && !thumbnail.isEmpty()) {
-                thumbnailUrl = s3Service.uploadImage(thumbnail, "images/study");
+                thumbnailUrl = s3FileUpload.uploadImage(thumbnail, "images/study");
             }
 
             // 카테고리와 레벨 파싱
@@ -86,7 +85,7 @@ public class StudyService implements StudyRegister {
             }
 
             // 스터디 저장
-            Study savedStudy = studyJpaRepository.save(study);
+            Study savedStudy = studyRepository.save(study);
 
 
         return StudyRegisterResponse.from(savedStudy);
@@ -95,7 +94,7 @@ public class StudyService implements StudyRegister {
     @Override
     public void enrollment(Long studyId, Long memberId, Integer depositAmount) {
 
-        Study study = studyJpaRepository.findStudiesById(studyId)
+        Study study = studyRepository.findStudiesById(studyId)
                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
         // 1. 참여 가능 여부 검증
@@ -118,7 +117,7 @@ public class StudyService implements StudyRegister {
 
         //todo payment 서비스 연동(예정)
 
-        studyJpaRepository.save(study);
+        studyRepository.save(study);
 
 
     }
