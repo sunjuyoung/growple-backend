@@ -1,0 +1,61 @@
+server:
+  port: 8083
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true  # 개별 서비스 UI는 false로 해도 됨
+
+spring:
+  application:
+    name: payment-service
+
+
+
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}/growple_payment?currentSchema=public
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jackson:
+    time-zone: Asia/Seoul
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+
+
+PSP:
+  toss:
+    clientKey: ${TOSS_CLIENT_KEY}
+    secretKey: ${TOSS_SECRET_KEY}
+    url: https://api.tosspayments.com
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+logging:
+  level:
+    root: INFO
+    com.grow.member: DEBUG

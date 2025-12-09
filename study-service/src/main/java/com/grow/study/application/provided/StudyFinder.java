@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface StudyFinder {
 
-     StudyWithMemberCountResponse getStudyEnrollmentDetail(Long studyId, Long userId);
+     StudyWithMemberCountResponse getStudyEnrollmentDetail(Long studyId);
 
      Page<StudyListResponse> getStudyList(
              String level,

@@ -1,13 +1,14 @@
 package com.grow.payment.domain.enums;
 
-import java.util.Arrays;
-
+/**
+ * 결제 상태
+ * 토스페이먼츠 상태와 매핑
+ */
 public enum PaymentStatus {
-    NOT_STARTED("결제 승인 시작 전"),
-    EXECUTING("결제 승인 중"),
-    SUCCESS("결제 승인 성공"),
-    FAILURE("결제 승인 실패"),
-    UNKNOWN("결제 승인 알 수 없는 상태");
+    READY("결제 준비"),           // 주문 생성됨, 결제 대기
+    DONE("결제 완료"),            // 승인 완료
+    CANCELLED("결제 취소"),       // 스터디 시작 전 취소
+    FAILED("결제 실패");          // 결제 실패
 
     private final String description;
 
@@ -17,12 +18,5 @@ public enum PaymentStatus {
 
     public String getDescription() {
         return description;
-    }
-
-    public static PaymentStatus get(String status) {
-        return Arrays.stream(values())
-                .filter(paymentStatus -> paymentStatus.name().equals(status))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("PaymentStatus: " + status + " 는 올바르지 않은 결제 타입입니다."));
     }
 }

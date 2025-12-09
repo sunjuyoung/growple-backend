@@ -33,7 +33,7 @@ public class StudyQueryService implements StudyFinder {
 
     @Transactional(readOnly = true)
     @Override
-    public StudyWithMemberCountResponse getStudyEnrollmentDetail(Long studyId, Long userId) {
+    public StudyWithMemberCountResponse getStudyEnrollmentDetail(Long studyId) {
 
         Study study = studyRepository.findWithSchedule(studyId).orElseThrow();
 
@@ -46,7 +46,7 @@ public class StudyQueryService implements StudyFinder {
                 .collect(Collectors.toSet());
 
         //member service 연동 필요
-        MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(userId);
+        MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(study.getLeaderId());
 
         return StudyWithMemberCountResponse.of(studyWithMemberCountDto, memberSummary,dayNames);
     }

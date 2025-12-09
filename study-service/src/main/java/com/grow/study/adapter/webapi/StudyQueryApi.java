@@ -50,13 +50,11 @@ public class StudyQueryApi {
                     content = @Content
             )
     })
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<StudyWithMemberCountResponse> getStudyEnrollmentDetail(
             @Parameter(description = "스터디 ID", required = true)
-            @PathVariable Long id,
-            @Parameter(description = "사용자 ID", required = true)
-            @RequestHeader("X-User-Id") Long userId) {
-        StudyWithMemberCountResponse study = studyFinder.getStudyEnrollmentDetail(id,userId);
+            @PathVariable Long id) {
+        StudyWithMemberCountResponse study = studyFinder.getStudyEnrollmentDetail(id);
 
         return ResponseEntity.ok(study);
     }
@@ -97,7 +95,7 @@ public class StudyQueryApi {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<CursorResult<StudyListResponse>> getStudyListByCursor(
             @Parameter(description = "난이도 (입문, 초급, 중급, 고급)")
             @RequestParam(required = false) String level,

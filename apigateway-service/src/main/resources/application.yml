@@ -79,6 +79,9 @@ jwt:
     - /actuator/**
     - /swagger-ui/**
     - /v3/api-docs/**
+    - /api/study/get/**
+    - /api/study/list
+    - /api/study/pages
 
 logging:
   level:

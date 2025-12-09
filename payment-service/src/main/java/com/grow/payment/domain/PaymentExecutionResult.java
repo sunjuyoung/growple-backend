@@ -62,11 +62,11 @@ public class PaymentExecutionResult {
 
     public PaymentStatus paymentStatus() {
         if (isSuccess) {
-            return PaymentStatus.SUCCESS;
+            return PaymentStatus.DONE;
         } else if (isFailure) {
-            return PaymentStatus.FAILURE;
+            return PaymentStatus.FAILED;
         } else if (isUnknown) {
-            return PaymentStatus.UNKNOWN;
+            return PaymentStatus.FAILED;
         } else {
             throw new IllegalArgumentException("결제 (orderId: " + orderId + ") 는 올바르지 않은 결제 상태입니다.");
         }
