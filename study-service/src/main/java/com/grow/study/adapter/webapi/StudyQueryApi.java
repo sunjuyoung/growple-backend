@@ -3,6 +3,7 @@ package com.grow.study.adapter.webapi;
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
 import com.grow.study.application.provided.StudyFinder;
+import com.grow.study.application.required.dto.StudySummaryResponse;
 import com.grow.study.application.required.dto.StudyWithMemberCountResponse;
 import com.grow.study.domain.study.StudyCategory;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,4 +121,14 @@ public class StudyQueryApi {
 
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/summary/{id}")
+    public ResponseEntity<StudySummaryResponse> getStudySimpleDetail(
+            @Parameter(description = "스터디 ID", required = true)
+            @PathVariable Long id) {
+        StudySummaryResponse response = studyFinder.getStudySimpleDetail(id);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

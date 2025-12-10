@@ -10,7 +10,8 @@ springdoc:
         name: Member-Service
       - url: /study-service/v3/api-docs
         name: Study-Service
-
+      - url: /payment-service/v3/api-docs
+        name: Payment-Service
 
 
 spring:
@@ -52,12 +53,12 @@ spring:
             - StripPrefix=1
           uri: lb://study-service
 
-        - id: product-service
+        - id: payment-service
           predicates:
-            - Path=/product-service/**
+            - Path=/payment-service/**
           filters:
             - StripPrefix=1
-          uri: lb://product-service
+          uri: lb://payment-service
 
         - id: article-service
           predicates:

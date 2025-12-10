@@ -13,6 +13,9 @@ import java.util.Optional;
 
 public interface StudyRepository {
 
+
+    Optional<Study> findById(Long studyId);
+
     Optional<Study> findStudiesById(Long studyId);
 
     Optional<Study> findWithSchedule(@Param("studyId") Long studyId);
@@ -24,5 +27,7 @@ public interface StudyRepository {
     CursorResult<StudyListResponse> searchStudyListByCursor(StudySearchCondition condition, String cursor, int size);
 
     Study save(Study study);
+
+
 
 }

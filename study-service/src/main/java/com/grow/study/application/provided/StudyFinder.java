@@ -2,6 +2,7 @@ package com.grow.study.application.provided;
 
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
+import com.grow.study.application.required.dto.StudySummaryResponse;
 import com.grow.study.application.required.dto.StudyWithMemberCountResponse;
 import com.grow.study.domain.study.StudyCategory;
 import org.springframework.data.domain.Page;
@@ -27,4 +28,8 @@ public interface StudyFinder {
             String sortType,
             String cursor
     );
+
+    StudySummaryResponse getStudySimpleDetail(Long id);
+
+
 }

@@ -21,6 +21,11 @@ public class StudyRepositoryAdapter implements StudyRepository {
 
 
     @Override
+    public Optional<Study> findById(Long studyId) {
+        return studyJpaRepository.findById(studyId);
+    }
+
+    @Override
     public Optional<Study> findStudiesById(Long studyId) {
         return studyJpaRepository.findStudiesById(studyId);
     }
@@ -49,6 +54,8 @@ public class StudyRepositoryAdapter implements StudyRepository {
     public Study save(Study study) {
         return studyJpaRepository.save(study);
     }
+
+
 
 
 }

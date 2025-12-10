@@ -64,4 +64,6 @@ public class StudyRegisterRequest {
     private String leaderMessage;
 
     private Integer totalSessions;
+
+    private String orderName;
 }

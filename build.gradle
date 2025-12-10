@@ -4,9 +4,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.grow'
-version = '0.1-SNAPSHOT'
-description = 'grow people study app'
+//group = 'com.grow'
+//version = '0.1-SNAPSHOT'
+//description = 'grow people study app'
 
 ext {
     springCloudVersion = "2024.0.2"

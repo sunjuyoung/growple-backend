@@ -11,12 +11,20 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payments")
+@Table(
+        name = "payments",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_study_member",
+                        columnNames = {"study_id", "member_id"}
+                )
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment extends AbstractEntity {
 
-    // === 연관 ID (MSA - 엔티티 참조 X) ===
+
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
@@ -62,22 +70,23 @@ public class Payment extends AbstractEntity {
 
     // === 생성 메서드 ===
     @Builder
-    private Payment(Long memberId, Long studyId, String orderName, Integer amount) {
+    private Payment(Long memberId, Long studyId, String orderName, Integer amount, String orderId) {
         this.memberId = memberId;
         this.studyId = studyId;
-        this.orderId = generateOrderId();
+        this.orderId = orderId;
         this.orderName = orderName;
         this.amount = amount;
-        this.status = PaymentStatus.READY;
+        this.status = PaymentStatus.PENDING;
         this.requestedAt = LocalDateTime.now();
     }
 
-    public static Payment create(Long memberId, Long studyId, String orderName, Integer amount) {
+    public static Payment create(Long memberId, Long studyId, String orderName, Integer amount, String orderId) {
         return Payment.builder()
                 .memberId(memberId)
                 .studyId(studyId)
                 .orderName(orderName)
                 .amount(amount)
+                .orderId(orderId)
                 .build();
     }
 
@@ -85,7 +94,7 @@ public class Payment extends AbstractEntity {
     public void approve(String paymentKey, String method) {
         this.paymentKey = paymentKey;
         this.method = method;
-        this.status = PaymentStatus.DONE;
+        this.status = PaymentStatus.COMPLETED;
         this.approvedAt = LocalDateTime.now();
     }
 
@@ -100,11 +109,11 @@ public class Payment extends AbstractEntity {
     }
 
     public boolean isDone() {
-        return this.status == PaymentStatus.DONE;
+        return this.status == PaymentStatus.COMPLETED;
     }
 
     public boolean isCancellable() {
-        return this.status == PaymentStatus.DONE;
+        return this.status == PaymentStatus.COMPLETED;
     }
 
     // === orderId 생성 ===

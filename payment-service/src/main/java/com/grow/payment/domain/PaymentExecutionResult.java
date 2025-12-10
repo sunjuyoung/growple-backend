@@ -62,7 +62,7 @@ public class PaymentExecutionResult {
 
     public PaymentStatus paymentStatus() {
         if (isSuccess) {
-            return PaymentStatus.DONE;
+            return PaymentStatus.COMPLETED;
         } else if (isFailure) {
             return PaymentStatus.FAILED;
         } else if (isUnknown) {

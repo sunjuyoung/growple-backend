@@ -7,9 +7,10 @@ package com.grow.payment.application.dto;
 public record PaymentConfirmCommand(
         String paymentKey,  // 토스가 발급한 결제 키
         String orderId,     // 우리가 생성한 주문 ID
-        Integer amount      // 결제 금액 (검증용)
+        Integer amount,      // 결제 금액 (검증용)
+        Integer studyId
 ) {
-    public static PaymentConfirmCommand of(String paymentKey, String orderId, Integer amount) {
-        return new PaymentConfirmCommand(paymentKey, orderId, amount);
+    public static PaymentConfirmCommand of(String paymentKey, String orderId, Integer amount, Integer studyId) {
+        return new PaymentConfirmCommand(paymentKey, orderId, amount, studyId);
     }
 }

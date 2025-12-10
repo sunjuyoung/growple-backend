@@ -30,11 +30,11 @@ public class PaymentApi {
      */
     @PostMapping
     public ResponseEntity<PaymentResponse> requestPayment(
-            @RequestHeader("X-Member-Id") Long memberId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestBody PaymentRequest request
     ) {
         PaymentRequestCommand command = PaymentRequestCommand.of(
-                memberId,
+                userId,
                 request.studyId(),
                 request.orderName(),
                 request.amount()
@@ -58,7 +58,8 @@ public class PaymentApi {
         PaymentConfirmCommand command = PaymentConfirmCommand.of(
                 request.paymentKey(),
                 request.orderId(),
-                request.amount()
+                request.amount(),
+                request.studyId()
         );
         
         PaymentResponse response = paymentService.confirmPayment(command);

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum StudyStatus {
+    PENDING("대기 중", "스터디가 개설 대기 중인 상태"),
     RECRUITING("모집 중", "참가자를 모집하고 있는 상태"),
     IN_PROGRESS("진행 중", "스터디가 시작되어 진행 중인 상태"),
     COMPLETED("완료", "스터디가 정상적으로 종료된 상태"),

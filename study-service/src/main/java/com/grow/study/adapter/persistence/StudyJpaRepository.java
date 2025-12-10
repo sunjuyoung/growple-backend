@@ -33,4 +33,7 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRep
 
     @EntityGraph(attributePaths = {"members"})
     Optional<Study> findStudiesById(Long studyId);
+
+
+    Optional<Study> findById(Long studyId);
 }

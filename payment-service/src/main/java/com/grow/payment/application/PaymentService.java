@@ -3,9 +3,12 @@ package com.grow.payment.application;
 import com.grow.payment.adapter.integration.TossPaymentClient;
 import com.grow.payment.adapter.integration.dto.TossConfirmResponse;
 import com.grow.payment.adapter.persistence.PaymentJpaRepository;
-import com.grow.payment.application.dto.PaymentConfirmCommand;
-import com.grow.payment.application.dto.PaymentRequestCommand;
-import com.grow.payment.application.dto.PaymentResponse;
+import com.grow.payment.application.dto.*;
+import com.grow.payment.application.provided.TossPayment;
+import com.grow.payment.application.required.PaymentPublisher;
+import com.grow.payment.application.required.StudyRestClient;
+import com.grow.common.PaymentEnrollmentEvent;
+import com.grow.payment.domain.AlreadyPaidException;
 import com.grow.payment.domain.Payment;
 import com.grow.payment.domain.enums.PaymentStatus;
 import lombok.RequiredArgsConstructor;
@@ -14,47 +17,64 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class PaymentService {
+public class PaymentService implements TossPayment {
 
     private final PaymentJpaRepository paymentRepository;
     private final TossPaymentClient tossPaymentClient;
+    private final PaymentPublisher paymentPublisher;
+    private final StudyRestClient studyRestClient;
 
     /**
      * 결제 요청 (주문 생성)
      * - Payment 엔티티 생성 (status = READY)
      * - 프론트에서 토스 결제창 호출 시 필요한 정보 반환
      */
+    @Override
     @Transactional
     public PaymentResponse requestPayment(PaymentRequestCommand command) {
+
+        String orderId = generateOrderId(command.studyId(), command.memberId());
+
+        Optional<Payment> existing = paymentRepository.findByOrderId(orderId);
+
+
         // 이미 결제 완료된 건이 있는지 확인
-        boolean alreadyPaid = paymentRepository.existsByMemberIdAndStudyIdAndStatus(
-                command.memberId(), 
-                command.studyId(), 
-                PaymentStatus.DONE
-        );
-        
-        if (alreadyPaid) {
-            throw new IllegalStateException("이미 결제가 완료된 스터디입니다.");
+        if (existing.isPresent()) {
+            Payment payment = existing.get();
+
+            // 이미 결제 완료된 경우
+            if (payment.getStatus() == PaymentStatus.COMPLETED) {
+                throw new AlreadyPaidException("이미 결제가 완료된 스터디입니다.");
+            }
+
+            // PENDING 상태면 기존 주문 재사용 (멱등성)
+            if (payment.getStatus() == PaymentStatus.PENDING) {
+                return PaymentResponse.from(payment);
+            }
         }
+
 
         Payment payment = Payment.create(
                 command.memberId(),
                 command.studyId(),
                 command.orderName(),
-                command.amount()
+                command.amount(),
+                orderId
         );
 
         Payment saved = paymentRepository.save(payment);
-        log.info("결제 요청 생성: orderId={}, memberId={}, studyId={}", 
-                saved.getOrderId(), command.memberId(), command.studyId());
         
         return PaymentResponse.from(saved);
+    }
+
+    private String generateOrderId(Long studyId, Long memberId) {
+        return String.format("STUDY_%d_MEMBER_%d", studyId, memberId);
     }
 
     /**
@@ -63,6 +83,7 @@ public class PaymentService {
      * - paymentKey로 토스 승인 API 호출
      * - 성공 시 상태 변경
      */
+    @Override
     @Transactional
     public PaymentResponse confirmPayment(PaymentConfirmCommand command) {
         Payment payment = paymentRepository.findByOrderId(command.orderId())
@@ -85,12 +106,35 @@ public class PaymentService {
             // 승인 성공 처리
             payment.approve(command.paymentKey(), tossResponse.getPaymentMethod());
             log.info("결제 승인 완료: orderId={}, method={}", command.orderId(), tossResponse.getPaymentMethod());
-            
+
+            paymentRepository.save(payment);
         } catch (Exception e) {
             payment.fail(e.getMessage());
             log.error("결제 승인 실패: orderId={}, error={}", command.orderId(), e.getMessage());
-            throw e;
+            throw new IllegalStateException("결제 승인에 실패했습니다.");
         }
+
+        //스터디 서비스 api
+        StudySummaryResponse memberSummary = studyRestClient.getMemberSummary(Long.valueOf(command.studyId()));
+
+
+        //스터디 상태에 따른 처리
+        if(memberSummary.status().equals("PENDING")){//생성 결제
+
+        }else if (memberSummary.status().equals("RECRUITING")){//참여 결제
+            paymentPublisher.publishPaymentEnrolledEvent(PaymentEnrollmentEvent.of(
+                    payment.getMemberId(),
+                    payment.getStudyId(),
+                    payment.getOrderName(),
+                    payment.getAmount(),
+                    command.paymentKey()
+            ));
+
+        }else {
+            throw new IllegalStateException("해당 스터디는 현재 참여할 수 없는 상태입니다.");
+        }
+
+
 
         return PaymentResponse.from(payment);
     }
@@ -132,7 +176,7 @@ public class PaymentService {
      * 특정 스터디의 완료된 결제 목록 조회 (정산용)
      */
     public List<PaymentResponse> getCompletedPaymentsByStudy(Long studyId) {
-        return paymentRepository.findByStudyIdAndStatus(studyId, PaymentStatus.DONE)
+        return paymentRepository.findByStudyIdAndStatus(studyId, PaymentStatus.COMPLETED)
                 .stream()
                 .map(PaymentResponse::from)
                 .toList();
@@ -142,6 +186,6 @@ public class PaymentService {
      * 회원의 결제 완료된 스터디 확인
      */
     public boolean hasCompletedPayment(Long memberId, Long studyId) {
-        return paymentRepository.existsByMemberIdAndStudyIdAndStatus(memberId, studyId, PaymentStatus.DONE);
+        return paymentRepository.existsByMemberIdAndStudyIdAndStatus(memberId, studyId, PaymentStatus.COMPLETED);
     }
 }

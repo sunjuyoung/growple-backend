@@ -1,7 +1,6 @@
-package com.grow.member.adapter;
+package com.grow.payment.adapter;
 
-import com.grow.member.application.InvalidTokenException;
-import com.grow.member.domain.member.DuplicationEmailException;
+import com.grow.payment.domain.AlreadyPaidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,15 +17,12 @@ public class ApiControllerAdvice extends ResponseEntityExceptionHandler {
         return  getProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR,exception);
     }
 
-    @ExceptionHandler(DuplicationEmailException.class)
-    public ProblemDetail emailExceptionHandler(DuplicationEmailException exception){
+    @ExceptionHandler(AlreadyPaidException.class)
+    public ProblemDetail emailExceptionHandler(AlreadyPaidException exception){
         return getProblemDetail(HttpStatus.CONFLICT,exception);
     }
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ProblemDetail invalidTokenExceptionHandler(InvalidTokenException exception){
-        return getProblemDetail(HttpStatus.UNAUTHORIZED,exception);
-    }
+
 
     private static ProblemDetail getProblemDetail(HttpStatus status,Exception exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, exception.getMessage());

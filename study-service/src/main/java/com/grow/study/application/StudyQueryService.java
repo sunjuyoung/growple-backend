@@ -8,6 +8,7 @@ import com.grow.study.adapter.persistence.dto.StudySearchCondition.StudySortType
 import com.grow.study.application.provided.StudyFinder;
 import com.grow.study.application.required.*;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
+import com.grow.study.application.required.dto.StudySummaryResponse;
 import com.grow.study.application.required.dto.StudyWithMemberCountDto;
 import com.grow.study.application.required.dto.StudyWithMemberCountResponse;
 import com.grow.study.domain.study.DayOfWeek;
@@ -89,6 +90,16 @@ public class StudyQueryService implements StudyFinder {
                 .build();
 
         return  studyRepository.searchStudyListByCursor(condition, cursor, 3);
+    }
+
+    @Override
+    public StudySummaryResponse getStudySimpleDetail(Long id) {
+        Study study = studyRepository.findById(id).orElseThrow();
+
+        return StudySummaryResponse.of(study.getId()
+                ,study.getStatus().name()
+                ,study.getDepositAmount()
+                ,study.getLeaderId());
     }
 
     private StudyLevel parseLevel(String level) {
