@@ -1,6 +1,7 @@
 package com.grow.study.adapter.intergration;
 
 
+import com.grow.common.StudyCreateEvent;
 import com.grow.study.application.NonRetryableException;
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.common.PaymentEnrollmentEvent;
@@ -19,9 +20,7 @@ public class StudyEventHandler {
 
     //참여 결제가 완료되었다 해당 스터디에 멤버로 등록
     @KafkaListener(topics = Topcis.PAYMENT_ENROLLED, groupId = "study-service-group")
-    public void handlePaymentFailed(PaymentEnrollmentEvent event) {
-        // Compensation: cancel the order on payment failure
-
+    public void handlePaymentEnroll(PaymentEnrollmentEvent event) {
         try {
             studyRegister.enrollment(
                     event.studyId(),
@@ -33,6 +32,12 @@ public class StudyEventHandler {
             studyProducer.publishStudyEnrolledFailedEvent(event, e.getMessage());
         }
 
+    }
+
+    //생성 결제가 완료 -> RECRUITING 상태로 변경
+    @KafkaListener(topics = Topcis.STUDY_CREATED, groupId = "study-service-group")
+    public void handlePaymentStudy(StudyCreateEvent event) {
+        studyRegister.changeStudyStatus(event.studyId(), event.userId());
     }
 
 }

@@ -89,7 +89,7 @@ public class StudyQueryService implements StudyFinder {
                 .sortType(parseSortType(sortType))
                 .build();
 
-        return  studyRepository.searchStudyListByCursor(condition, cursor, 3);
+        return  studyRepository.searchStudyListByCursor(condition, cursor, 8);
     }
 
     @Override

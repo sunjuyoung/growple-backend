@@ -2,10 +2,7 @@ package com.grow.study.domain.study;
 
 import com.grow.study.domain.AbstractEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDate;
@@ -14,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Builder
 @Entity
 @Table(name = "studies", indexes = {
         @Index(name = "idx_study_created_at_id", columnList = "createdAt DESC, id DESC"),
@@ -24,6 +22,7 @@ import java.util.List;
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Study extends AbstractEntity {
 
     @Column(nullable = false, length = 50)
@@ -93,16 +92,18 @@ public class Study extends AbstractEntity {
 
     // ==================== 상태 정보 ====================
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    @Comment("스터디 상태")
-    private StudyStatus status = StudyStatus.RECRUITING;
+    private StudyStatus status = StudyStatus.PENDING;
 
     // ==================== 연관 관계 ====================
 
+    @Builder.Default
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyMember> members = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
@@ -128,8 +129,8 @@ public class Study extends AbstractEntity {
 
     // ==================== 생성자 ====================
 
-    @Builder
-    public Study(
+
+    public static Study create(
             String title,
             String thumbnailUrl,
             StudyCategory category,
@@ -142,28 +143,32 @@ public class Study extends AbstractEntity {
             Integer depositAmount,
             String introduction,
             String curriculum,
-            String leaderMessage
+            String leaderMessage,
+            StudyStatus status
     ) {
         LocalDateTime now = LocalDateTime.now();
 
-        this.title = title;
-        this.thumbnailUrl = thumbnailUrl;
-        this.category = category;
-        this.level = level;
-        this.visibility = visibility;
-        this.leaderId = leaderId;
-        this.schedule = schedule;
-        this.minParticipants = minParticipants;
-        this.maxParticipants = maxParticipants;
-        this.depositAmount = depositAmount;
-        this.introduction = introduction;
-        this.curriculum = curriculum;
-        this.leaderMessage = leaderMessage;
-        this.createdAt = now;
-        this.updatedAt = now;
-        this.currentParticipants = 1;
+        Study study = new Study();
+        study.title = title;
+        study.thumbnailUrl = thumbnailUrl;
+        study.category = category;
+        study.level = level;
+        study.visibility = visibility;
+        study.leaderId = leaderId;
+        study.schedule = schedule;
+        study.minParticipants = minParticipants;
+        study.maxParticipants = maxParticipants;
+        study.depositAmount = depositAmount;
+        study.introduction = introduction;
+        study.curriculum = curriculum;
+        study.leaderMessage = leaderMessage;
+        study.status = status;
+        study.createdAt = now;
+        study.updatedAt = now;
+        study.currentParticipants = 1;
 
-        validateStudy();
+        study.validateStudy();
+        return study;
     }
 
     // ==================== 비즈니스 메서드 ====================
@@ -328,6 +333,16 @@ public class Study extends AbstractEntity {
         return this.status == StudyStatus.RECRUITING
                 && !isFull()
                 && !this.schedule.hasStarted();
+    }
+
+    //스터디 모집 시작
+    public void openRecruitment() {
+        if (this.status != StudyStatus.PENDING) {
+            throw new IllegalStateException("대기 중인 스터디만 모집을 시작할 수 있습니다.");
+        }
+
+        this.status = StudyStatus.RECRUITING;
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**

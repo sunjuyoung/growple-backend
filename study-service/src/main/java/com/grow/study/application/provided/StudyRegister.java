@@ -6,8 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface StudyRegister {
 
-    StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId);
+     StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId);
 
      void enrollment(Long studyId, Long memberId, Integer depositAmount);
+
+     void changeStudyStatus(Long studyId, Long leaderId);
 
 }

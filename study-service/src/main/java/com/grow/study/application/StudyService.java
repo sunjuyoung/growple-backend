@@ -28,7 +28,6 @@ public class StudyService implements StudyRegister {
 
     private final S3FileUpload s3FileUpload;
     private final StudyRepository studyRepository;
-    private final StudyEventPublisher studyEventPublisher;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
@@ -63,21 +62,22 @@ public class StudyService implements StudyRegister {
             );
 
             // 스터디 엔티티 생성
-            Study study = Study.builder()
-                    .title(request.getTitle())
-                    .thumbnailUrl(thumbnailUrl)
-                    .category(category)
-                    .level(level)
-                    .visibility(visibility)
-                    .leaderId(leaderId)
-                    .schedule(schedule)
-                    .minParticipants(request.getMinMembers())
-                    .maxParticipants(request.getMaxMembers())
-                    .depositAmount(request.getDeposit())
-                    .introduction(request.getIntroduction())
-                    .curriculum(request.getCurriculum())
-                    .leaderMessage(request.getLeaderMessage())
-                    .build();
+            Study study = Study.create(
+                    request.getTitle(),
+                    thumbnailUrl,
+                    category,
+                    level,
+                    visibility,
+                    leaderId,
+                    schedule,
+                    request.getMinMembers(),
+                    request.getMaxMembers(),
+                    request.getDeposit(),
+                    request.getIntroduction(),
+                    request.getCurriculum(),
+                    request.getLeaderMessage(),
+                    StudyStatus.PENDING
+            );
 
             // 스터디장을 멤버로 추가
             study.addLeaderAsMember();
@@ -89,16 +89,6 @@ public class StudyService implements StudyRegister {
 
             // 스터디 저장
             Study savedStudy = studyRepository.save(study);
-
-            //todo 스터디 결제 서비스 연동(예정)
-
-
-        studyEventPublisher.publishStudy(StudyCreateEvent.of(
-                leaderId,
-                savedStudy.getId(),
-                request.getOrderName(),
-                savedStudy.getDepositAmount()
-        ));
 
         return StudyRegisterResponse.from(savedStudy);
     }
@@ -129,8 +119,17 @@ public class StudyService implements StudyRegister {
 
 
         studyRepository.save(study);
+    }
 
+    public void changeStudyStatus(Long studyId, Long leaderId) {
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
+        study.isLeader(leaderId);
+
+        study.openRecruitment();
+
+        studyRepository.save(study);
     }
 
 }

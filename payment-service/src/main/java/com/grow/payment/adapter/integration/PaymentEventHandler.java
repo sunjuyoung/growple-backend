@@ -17,13 +17,13 @@ public class PaymentEventHandler {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final TossPayment tossPayment;
 
-    @KafkaListener(topics = Topics.STUDY_CREATED, groupId = "payment-service-group")
-    public void processStudyCreatedEvent(StudyCreateEvent event) {
-        // Handle the study created event
-        log.info("Received study created event: {}", event);
-        // Add your business logic here
-        tossPayment.requestPayment(
-                PaymentRequestCommand.of(event.userId(), event.studyId(), event.orderName(), event.amount())
-        );
-    }
+//    @KafkaListener(topics = Topics.STUDY_CREATED, groupId = "payment-service-group")
+//    public void processStudyCreatedEvent(StudyCreateEvent event) {
+//        // Handle the study created event
+//        log.info("Received study created event: {}", event);
+//        // Add your business logic here
+//        tossPayment.requestPayment(
+//                PaymentRequestCommand.of(event.userId(), event.studyId(), event.orderName(), event.amount())
+//        );
+//    }
 }

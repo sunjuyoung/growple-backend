@@ -49,7 +49,6 @@ spring:
         spring.json.type.mapping: >
           StudyCreateEvent:com.grow.common.StudyCreateEvent,
           PaymentEnrollmentEvent:com.grow.common.PaymentEnrollmentEvent
-     #   spring.json.value.default.type: com.grow.common.PaymentEnrollmentEvent
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

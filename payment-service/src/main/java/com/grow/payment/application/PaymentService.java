@@ -1,5 +1,6 @@
 package com.grow.payment.application;
 
+import com.grow.common.StudyCreateEvent;
 import com.grow.payment.adapter.integration.TossPaymentClient;
 import com.grow.payment.adapter.integration.dto.TossConfirmResponse;
 import com.grow.payment.adapter.persistence.PaymentJpaRepository;
@@ -31,8 +32,8 @@ public class PaymentService implements TossPayment {
     private final StudyRestClient studyRestClient;
 
     /**
-     * 결제 요청 (주문 생성)
-     * - Payment 엔티티 생성 (status = READY)
+     * 결제 요청 (결제 생성)
+     * - Payment 엔티티 생성 (status = PENDING)
      * - 프론트에서 토스 결제창 호출 시 필요한 정보 반환
      */
     @Override
@@ -81,7 +82,7 @@ public class PaymentService implements TossPayment {
      * 결제 승인
      * - 토스에서 redirect 후 호출
      * - paymentKey로 토스 승인 API 호출
-     * - 성공 시 상태 변경
+     * - 성공 시 상태 변경 COMPLETED
      */
     @Override
     @Transactional
@@ -115,13 +116,25 @@ public class PaymentService implements TossPayment {
         }
 
         //스터디 서비스 api
-        StudySummaryResponse memberSummary = studyRestClient.getMemberSummary(Long.valueOf(command.studyId()));
+        StudySummaryResponse studySummary = studyRestClient.getMemberSummary(Long.valueOf(command.studyId()));
 
 
         //스터디 상태에 따른 처리
-        if(memberSummary.status().equals("PENDING")){//생성 결제
+        //생성 결제
+        if(studySummary.status().equals("PENDING")){
+            //스터디 RECRUITING 상태로 변경 이벤트 발행
+            log.info("스터디 생성 결제 완료 이벤트 발행: studyId={}", payment.getStudyId());
+            paymentPublisher.publishStudyCreatedEvent(
+                    StudyCreateEvent.of(
+                            payment.getMemberId(),
+                            payment.getStudyId(),
+                            payment.getOrderName(),
+                            payment.getAmount()
+                    )
+            );
 
-        }else if (memberSummary.status().equals("RECRUITING")){//참여 결제
+            //참여 결제
+        }else if (studySummary.status().equals("RECRUITING")){
             paymentPublisher.publishPaymentEnrolledEvent(PaymentEnrollmentEvent.of(
                     payment.getMemberId(),
                     payment.getStudyId(),
@@ -133,7 +146,6 @@ public class PaymentService implements TossPayment {
         }else {
             throw new IllegalStateException("해당 스터디는 현재 참여할 수 없는 상태입니다.");
         }
-
 
 
         return PaymentResponse.from(payment);

@@ -8,11 +8,13 @@ import com.grow.payment.application.dto.PaymentConfirmCommand;
 import com.grow.payment.application.dto.PaymentRequestCommand;
 import com.grow.payment.application.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class PaymentApi {
             @RequestHeader("X-User-Id") Long userId,
             @RequestBody PaymentRequest request
     ) {
+        log.info("Request payment: userId={}, request={}", userId, request);
         PaymentRequestCommand command = PaymentRequestCommand.of(
                 userId,
                 request.studyId(),
@@ -41,6 +44,7 @@ public class PaymentApi {
         );
         
         PaymentResponse response = paymentService.requestPayment(command);
+
         return ResponseEntity.ok(response);
     }
 
@@ -55,6 +59,7 @@ public class PaymentApi {
     public ResponseEntity<PaymentResponse> confirmPayment(
             @RequestBody PaymentConfirmRequest request
     ) {
+        log.info("Confirm payment request: {}", request);
         PaymentConfirmCommand command = PaymentConfirmCommand.of(
                 request.paymentKey(),
                 request.orderId(),

@@ -16,6 +16,7 @@ import java.time.LocalTime;
 public class StudyRegisterResponse {
 
     private Long studyId;
+    private Long userId;
     private String title;
     private String thumbnailUrl;
     private String category;
@@ -46,6 +47,7 @@ public class StudyRegisterResponse {
                 .startTime(study.getSchedule().getStartTime())
                 .endTime(study.getSchedule().getEndTime())
                 .status(study.getStatus().name())
+                .userId(study.getLeaderId())
                 .build();
     }
 }
