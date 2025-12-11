@@ -13,6 +13,7 @@ import static org.springframework.util.Assert.state;
         name = "chat_rooms",
         indexes = {
                 @Index(name = "idx_chat_room_created_at", columnList = "created_at"),
+                @Index(name = "idx_chat_room_study_id", columnList = "study_id"),
         }
 )
 @Entity
@@ -23,6 +24,8 @@ import static org.springframework.util.Assert.state;
 @NoArgsConstructor
 public class ChatRoom extends AbstractEntity {
 
+    @Column(name = "study_id", nullable = false, unique = true)
+    private Long studyId;
 
     @Column(nullable = false, length = 100)
     private String name;

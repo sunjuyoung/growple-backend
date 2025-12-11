@@ -32,6 +32,10 @@ spring:
           time_zone: Asia/Seoul
     show-sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 
 

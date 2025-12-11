@@ -33,4 +33,9 @@ public class ChatMessage extends AbstractEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private MessageType messageType = MessageType.CHAT;
+
 }

@@ -43,4 +43,16 @@ public class ChatRoomMember extends AbstractEntity{
     @Column
     private LocalDateTime leftAt;
 
+    public void updateLastReadMessage(Long messageId) {
+        this.lastReadMessageId = messageId;
+    }
+
+    public void leave() {
+        this.leftAt = LocalDateTime.now();
+    }
+
+    public boolean isActiveMember() {
+        return this.leftAt == null;
+    }
+
 }
