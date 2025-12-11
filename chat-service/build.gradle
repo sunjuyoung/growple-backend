@@ -5,8 +5,8 @@ plugins {
 }
 
 group = 'com.grow'
-version = '0.0.1-SNAPSHOT'
-description = 'discovery-service'
+version = '0.1-SNAPSHOT'
+description = 'chat-service'
 
 java {
     toolchain {
@@ -25,14 +25,23 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2024.0.0")
+    set('springCloudVersion', "2024.0.2")
 }
 
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'org.postgresql:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
