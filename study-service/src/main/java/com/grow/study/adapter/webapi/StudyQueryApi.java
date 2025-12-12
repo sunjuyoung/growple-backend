@@ -2,6 +2,7 @@ package com.grow.study.adapter.webapi;
 
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
+import com.grow.study.application.dto.StudyDashboardResponse;
 import com.grow.study.application.provided.StudyFinder;
 import com.grow.study.application.required.dto.StudySummaryResponse;
 import com.grow.study.application.required.dto.StudyWithMemberCountResponse;
@@ -53,7 +54,6 @@ public class StudyQueryApi {
     })
     @GetMapping("/get/{id}")
     public ResponseEntity<StudyWithMemberCountResponse> getStudyEnrollmentDetail(
-            @Parameter(description = "스터디 ID", required = true)
             @PathVariable Long id) {
         StudyWithMemberCountResponse study = studyFinder.getStudyEnrollmentDetail(id);
 
@@ -72,13 +72,9 @@ public class StudyQueryApi {
     })
     @GetMapping("/pages")
     public ResponseEntity<Page<StudyListResponse>> getStudyList(
-            @Parameter(description = "난이도 (입문, 초급, 중급, 고급)")
             @RequestParam(required = false) String level,
-            @Parameter(description = "카테고리")
             @RequestParam(required = false) StudyCategory category,
-            @Parameter(description = "최소 보증금")
             @RequestParam(required = false) Integer minDepositAmount,
-            @Parameter(description = "최대 보증금")
             @RequestParam(required = false) Integer maxDepositAmount,
             @Parameter(description = "정렬 타입 (LATEST: 최신순, DEADLINE_SOON: 마감임박순)")
             @RequestParam(required = false) String sortType,
@@ -98,13 +94,9 @@ public class StudyQueryApi {
 
     @GetMapping("/list")
     public ResponseEntity<CursorResult<StudyListResponse>> getStudyListByCursor(
-            @Parameter(description = "난이도 (입문, 초급, 중급, 고급)")
             @RequestParam(required = false) String level,
-            @Parameter(description = "카테고리")
             @RequestParam(required = false) StudyCategory category,
-            @Parameter(description = "최소 보증금")
             @RequestParam(required = false) Integer minDepositAmount,
-            @Parameter(description = "최대 보증금")
             @RequestParam(required = false) Integer maxDepositAmount,
             @Parameter(description = "정렬 타입 (LATEST: 최신순, DEADLINE_SOON: 마감임박순)")
             @RequestParam(required = false) String sortType,
@@ -122,6 +114,17 @@ public class StudyQueryApi {
         return ResponseEntity.ok(result);
     }
 
+
+    @GetMapping("/board/{id}")
+    public ResponseEntity<StudyDashboardResponse> getStudyDashBoardDetail(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id) {
+        StudyDashboardResponse studyDashboard = studyFinder.getStudyDashboard(id, userId);
+
+        return ResponseEntity.ok(studyDashboard);
+    }
+
+
     @GetMapping("/summary/{id}")
     public ResponseEntity<StudySummaryResponse> getStudySimpleDetail(
             @Parameter(description = "스터디 ID", required = true)
@@ -130,5 +133,6 @@ public class StudyQueryApi {
 
         return ResponseEntity.ok(response);
     }
+
 
 }
