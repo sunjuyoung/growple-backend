@@ -70,7 +70,7 @@ public class Study extends AbstractEntity {
 
     @Column(nullable = false)
     @Comment("현재 참가 인원")
-    private Integer currentParticipants = 0;
+    private Integer currentParticipants;
 
     @Column(nullable = false)
     @Comment("보증금(참가비) 포인트")

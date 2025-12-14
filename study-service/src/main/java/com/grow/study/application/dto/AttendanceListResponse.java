@@ -2,8 +2,11 @@ package com.grow.study.application.dto;
 
 
 import com.grow.study.domain.study.Attendance;
+import com.grow.study.domain.study.AttendanceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**

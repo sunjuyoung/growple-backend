@@ -29,5 +29,6 @@ public interface StudyRepository {
     Study save(Study study);
 
 
+    Optional<Study> findStudyDashBoard(@Param("studyId") Long studyId);
 
 }

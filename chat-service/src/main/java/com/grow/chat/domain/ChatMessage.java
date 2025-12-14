@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Table(
         name = "chat_messages",
         indexes = {
@@ -37,5 +39,11 @@ public class ChatMessage extends AbstractEntity {
     @Column(nullable = false, length = 20)
     @Builder.Default
     private MessageType messageType = MessageType.CHAT;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+
+
 
 }

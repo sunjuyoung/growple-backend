@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,22 +31,39 @@ public class ChatRoomService {
                 .studyId(studyId)
                 .name(roomName)
                 .isActive(true)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         ChatRoom savedRoom = chatRoomRepository.save(chatRoom);
-        log.info("채팅방 생성 완료: studyId={}, roomId={}", studyId, savedRoom.getId());
 
         return ChatRoomResponse.from(savedRoom);
     }
 
     @Transactional
-    public void joinChatRoom(Long chatRoomId, Long memberId) {
+    public ChatRoomResponse createChatRoomMember(Long studyId, Long roomId, Long userId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findByIdAndStudyId(roomId, studyId).orElseThrow();
+
+        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, userId);
+
+        chatRoom.getMembers().add(chatRoomMember);
+        chatRoomMember.assignChatRoom(chatRoom);
+
+        ChatRoom savedRoom = chatRoomRepository.save(chatRoom);
+        chatRoomMemberRepository.save(chatRoomMember);
+
+        return ChatRoomResponse.from(savedRoom);
+    }
+
+
+    @Transactional
+    public ChatRoom joinChatRoom(Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
 
         if (chatRoomMemberRepository.existsByChatRoomIdAndMemberIdAndLeftAtIsNull(chatRoomId, memberId)) {
             log.warn("이미 입장한 채팅방입니다: chatRoomId={}, memberId={}", chatRoomId, memberId);
-            return;
+            return chatRoom;
         }
 
         ChatRoomMember member = ChatRoomMember.builder()
@@ -52,8 +71,9 @@ public class ChatRoomService {
                 .memberId(memberId)
                 .build();
 
-        chatRoomMemberRepository.save(member);
+        ChatRoomMember save = chatRoomMemberRepository.save(member);
         log.info("채팅방 입장: chatRoomId={}, memberId={}", chatRoomId, memberId);
+        return chatRoom;
     }
 
     @Transactional

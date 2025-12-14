@@ -13,6 +13,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     Optional<ChatRoom> findByStudyId(Long studyId);
 
+    Optional<ChatRoom> findByIdAndStudyId(@Param("id") Long id,  @Param("studyId") Long studyId);
+
     boolean existsByStudyId(Long studyId);
 
     @Query("SELECT cr FROM ChatRoom cr WHERE cr.studyId = :studyId AND cr.isActive = true")

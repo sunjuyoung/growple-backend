@@ -34,6 +34,14 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRep
     @EntityGraph(attributePaths = {"members"})
     Optional<Study> findStudiesById(Long studyId);
 
+    @Query("""
+    SELECT s FROM Study s
+    LEFT JOIN FETCH s.schedule.daysOfWeek
+    LEFT JOIN FETCH s.members
+    WHERE s.id = :studyId
+    """)
+    Optional<Study> findStudyDashBoard(@Param("studyId") Long studyId);
+
 
     Optional<Study> findById(Long studyId);
 }

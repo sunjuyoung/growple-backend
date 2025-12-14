@@ -43,6 +43,21 @@ public class ChatRoomMember extends AbstractEntity{
     @Column
     private LocalDateTime leftAt;
 
+
+    //생성메서드
+    public static ChatRoomMember of(ChatRoom chatRoom, Long memberId) {
+        return ChatRoomMember.builder()
+                .chatRoom(chatRoom)
+                .memberId(memberId)
+                .build();  // joinedAt은 @Builder.Default로 자동 설정
+    }
+
+    public void assignChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
+
+
+
     public void updateLastReadMessage(Long messageId) {
         this.lastReadMessageId = messageId;
     }

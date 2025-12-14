@@ -19,6 +19,9 @@ spring:
     name: apigateway-service
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -35,6 +38,7 @@ spring:
             allow-credentials: true
             exposed-headers:
               - Set-Cookie
+              - Authorization
 
 
 
@@ -60,12 +64,17 @@ spring:
             - StripPrefix=1
           uri: lb://payment-service
 
-        - id: article-service
+        - id: chat-service
           predicates:
-            - Path=/article-service/**
+            - Path=/chat-service/**
           filters:
             - StripPrefix=1
-          uri: lb://article-service
+          uri: lb://chat-service
+
+        - id: chat-service-websocket
+          predicates:
+            - Path=/ws-chat/**
+          uri: lb://chat-service
 
 
 
@@ -83,6 +92,8 @@ jwt:
     - /api/study/get/**
     - /api/study/list
     - /api/study/pages
+    - /api/chat/**
+    - /ws-chat/**
 
 logging:
   level:

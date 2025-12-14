@@ -22,16 +22,6 @@ public abstract class AbstractEntity {
     @Getter
     private Long id;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @Getter
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    @Getter
-    private LocalDateTime updatedAt;
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

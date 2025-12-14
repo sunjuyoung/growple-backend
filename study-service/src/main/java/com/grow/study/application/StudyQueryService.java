@@ -113,7 +113,7 @@ public class StudyQueryService implements StudyFinder {
     @Transactional(readOnly = true)
     public StudyDashboardResponse getStudyDashboard(Long studyId, Long memberId) {
         // 스터디 및 관련 정보 조회
-        Study study = studyRepository.findById(studyId)
+        Study study = studyRepository.findStudyDashBoard(studyId)
                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
         // 스터디가 진행중 상태인지 확인

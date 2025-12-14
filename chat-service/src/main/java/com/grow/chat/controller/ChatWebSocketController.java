@@ -60,6 +60,7 @@ public class ChatWebSocketController {
                 request.getChatRoomId(), request.getSenderId());
 
         try {
+
             // 입장 시스템 메시지 생성 및 브로드캐스트
             ChatMessageResponse response = chatMessageService.sendSystemMessage(
                     request.getChatRoomId(),

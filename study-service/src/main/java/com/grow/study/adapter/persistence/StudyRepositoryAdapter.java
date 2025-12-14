@@ -55,7 +55,10 @@ public class StudyRepositoryAdapter implements StudyRepository {
         return studyJpaRepository.save(study);
     }
 
-
+    @Override
+    public Optional<Study> findStudyDashBoard(Long studyId) {
+        return studyJpaRepository.findStudyDashBoard(studyId);
+    }
 
 
 }

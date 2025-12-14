@@ -17,6 +17,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -49,6 +53,7 @@ public class ChatMessageService {
                 .sender(request.getSenderId())
                 .content(request.getContent())
                 .messageType(request.getMessageType())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
@@ -70,12 +75,21 @@ public class ChatMessageService {
                 .sender(0L) // 시스템 메시지는 sender를 0으로 설정
                 .content(content)
                 .messageType(messageType)
+                .createdAt(LocalDateTime.now())
                 .build();
 
-        ChatMessage savedMessage = chatMessageRepository.save(message);
-        invalidateUnreadCountCache(chatRoomId);
+        Long randomNumber = ThreadLocalRandom.current().nextLong(99100, 100000);
+        return ChatMessageResponse.builder()
+                .id(randomNumber)
+                .chatRoomId(chatRoomId)
+                .senderId(message.getSender())
+                .content(message.getContent())
+                .messageType(message.getMessageType())
+                .createdAt(message.getCreatedAt())
+                .build();
 
-        return ChatMessageResponse.from(savedMessage);
+
+
     }
 
     public Page<ChatMessageResponse> getChatHistory(Long chatRoomId, Pageable pageable) {

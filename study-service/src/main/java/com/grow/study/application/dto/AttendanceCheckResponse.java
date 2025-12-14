@@ -2,7 +2,10 @@ package com.grow.study.application.dto;
 
 
 import com.grow.study.domain.study.Attendance;
+import com.grow.study.domain.study.AttendanceStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalDateTime;
 
 /**
  * 출석 체크 응답 DTO
