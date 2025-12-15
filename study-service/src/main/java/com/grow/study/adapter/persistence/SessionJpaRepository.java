@@ -44,5 +44,28 @@ public interface SessionJpaRepository extends JpaRepository<Session, Long> {
             "AND s.status = 'IN_PROGRESS' " +
             "AND CURRENT_TIMESTAMP BETWEEN s.attendanceCheckStartTime AND s.attendanceCheckEndTime")
     List<Session> findAttendanceCheckAvailableSessions(@Param("studyId") Long studyId);
+
+    /**
+     * 출석 마감 시간이 지났고, 아직 처리되지 않은 세션 조회
+     */
+    @Query("""
+        SELECT s FROM Session s
+        JOIN FETCH s.study
+        WHERE s.attendanceCheckEndTime < :now
+          AND s.attendanceProcessed = false
+          AND s.status != 'CANCELLED'
+    """)
+    List<Session> findExpiredAndUnprocessed(@Param("now") java.time.LocalDateTime now);
+
+    /**
+     * 특정 날짜에 시작하는 세션 조회 (Study 함께)
+     */
+    @Query("""
+        SELECT s FROM Session s
+        JOIN FETCH s.study
+        WHERE s.sessionDate = :date
+          AND s.status != 'CANCELLED'
+    """)
+    List<Session> findBySessionDateWithStudy(@Param("date") LocalDate date);
 }
 

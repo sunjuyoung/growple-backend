@@ -109,6 +109,10 @@ public class Session extends AbstractEntity {
     @Comment("종료일시")
     private LocalDateTime completedAt;
 
+    @Comment("출석 마감 처리 완료 여부")
+    @Column(nullable = false)
+    private Boolean attendanceProcessed = false;
+
     // ==================== 생성자 ====================
 
     @Builder
@@ -215,6 +219,11 @@ public class Session extends AbstractEntity {
         return !now.isBefore(attendanceCheckStartTime) && !now.isAfter(attendanceCheckEndTime);
     }
 
+    public boolean isAttendCheckDay(){
+        LocalDate now = LocalDate.now();
+        return now.equals(this.sessionDate);
+    }
+
     /**
      * 출석 체크 시작 전인지 확인
      */
@@ -259,5 +268,19 @@ public class Session extends AbstractEntity {
      */
     public long getDurationMinutes() {
         return java.time.Duration.between(startTime, endTime).toMinutes();
+    }
+
+    /**
+     * 출석 마감 처리 완료
+     */
+    public void markAttendanceProcessed() {
+        this.attendanceProcessed = true;
+    }
+
+    /**
+     * 출석 마감 처리 여부 확인
+     */
+    public boolean isAttendanceProcessed() {
+        return this.attendanceProcessed;
     }
 }

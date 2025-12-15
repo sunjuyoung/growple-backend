@@ -395,8 +395,7 @@ public class Study extends AbstractEntity {
      */
     public void addMember(Long memberId, Integer depositAmount) {
         // 이미 참가한 멤버인지 확인
-        boolean alreadyMember = this.members.stream()
-                .anyMatch(m -> m.getMemberId().equals(memberId) && m.isActive());
+        boolean alreadyMember = isMember(memberId);
 
         if (alreadyMember) {
             throw new IllegalStateException("이미 참가한 멤버입니다.");
@@ -405,5 +404,11 @@ public class Study extends AbstractEntity {
         StudyMember member = StudyMember.createMember(this, memberId, depositAmount);
         this.members.add(member);
         addParticipant();
+    }
+
+    public boolean isMember(Long memberId) {
+
+        return  this.members.stream()
+                .anyMatch(m -> m.getMemberId().equals(memberId) && m.isActive());
     }
 }

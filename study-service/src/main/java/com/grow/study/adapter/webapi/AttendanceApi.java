@@ -39,21 +39,6 @@ public class AttendanceApi {
                     responseCode = "200",
                     description = "출석 체크 성공",
                     content = @Content(schema = @Schema(implementation = AttendanceCheckResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "출석 체크 시간이 아니거나 이미 체크한 경우",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "인증 실패",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "세션을 찾을 수 없거나 스터디 멤버가 아닌 경우",
-                    content = @Content
             )
     })
     @PostMapping("/check")
@@ -63,6 +48,7 @@ public class AttendanceApi {
     ) {
         AttendanceCheckResponse response = attendanceService.checkAttendance(
                 request.sessionId(),
+                request.studyId(),
                 userId
         );
 
@@ -79,16 +65,6 @@ public class AttendanceApi {
                     responseCode = "200",
                     description = "조회 성공",
                     content = @Content(schema = @Schema(implementation = AttendanceListResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "인증 실패",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "스터디를 찾을 수 없거나 스터디 멤버가 아닌 경우",
-                    content = @Content
             )
     })
     @GetMapping("/my/{studyId}")
@@ -109,21 +85,6 @@ public class AttendanceApi {
                     responseCode = "200",
                     description = "조회 성공",
                     content = @Content(schema = @Schema(implementation = SessionAttendanceResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "인증 실패",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "스터디장 권한 없음",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "세션을 찾을 수 없는 경우",
-                    content = @Content
             )
     })
     @GetMapping("/session/{sessionId}")
@@ -143,11 +104,6 @@ public class AttendanceApi {
             @ApiResponse(
                     responseCode = "200",
                     description = "처리 성공"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "출석 체크 시간이 아직 종료되지 않은 경우",
-                    content = @Content
             )
     })
     @PostMapping("/process-absences/{sessionId}")
@@ -167,16 +123,6 @@ public class AttendanceApi {
             @ApiResponse(
                     responseCode = "200",
                     description = "수정 성공"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청",
-                    content = @Content
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "스터디장 권한 없음",
-                    content = @Content
             )
     })
     @PutMapping("/{attendanceId}")

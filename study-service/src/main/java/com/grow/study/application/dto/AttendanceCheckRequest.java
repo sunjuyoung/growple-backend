@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 public record AttendanceCheckRequest(
         @NotNull(message = "세션 ID는 필수입니다")
         @Schema(description = "세션 ID", example = "1")
-        Long sessionId
+        Long sessionId,
+        Long studyId
 ) {
 }

@@ -63,6 +63,11 @@ public class StudyMember extends AbstractEntity {
     @Comment("환급 일시")
     private LocalDateTime refundedAt;
 
+
+    @Column
+    @Comment("차감된 금액")
+    private Integer deductedDeposit;
+
     // ==================== 출석 정보 ====================
 
     @Column(nullable = false)
@@ -176,6 +181,11 @@ public class StudyMember extends AbstractEntity {
 
         this.refundAmount = amount;
         this.refundedAt = LocalDateTime.now();
+    }
+
+
+    public void deductDeposit() {
+        this.deductedDeposit += 1000;
     }
 
     /**

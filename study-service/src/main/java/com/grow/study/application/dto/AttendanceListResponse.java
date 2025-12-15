@@ -75,8 +75,6 @@ public record AttendanceListResponse(
             @Schema(description = "결석 횟수", example = "2")
             Integer absentCount,
 
-            @Schema(description = "지각 횟수", example = "0")
-            Integer lateCount,
 
             @Schema(description = "출석률 (%)", example = "80.0")
             Double attendanceRate
@@ -89,9 +87,6 @@ public record AttendanceListResponse(
             long absentCount = attendances.stream()
                     .filter(a -> a.getStatus() == AttendanceStatus.ABSENT)
                     .count();
-            long lateCount = attendances.stream()
-                    .filter(a -> a.getStatus() == AttendanceStatus.LATE)
-                    .count();
 
             double attendanceRate = totalSessions > 0
                     ? (double) presentCount / totalSessions * 100
@@ -101,7 +96,6 @@ public record AttendanceListResponse(
                     totalSessions,
                     (int) presentCount,
                     (int) absentCount,
-                    (int) lateCount,
                     Math.round(attendanceRate * 100) / 100.0
             );
         }

@@ -96,9 +96,6 @@ public class Attendance extends AbstractEntity {
      * 출석 체크 생성
      */
     public static Attendance createPresent(Session session, Long memberId) {
-        if (!session.isAttendanceCheckAvailable()) {
-            throw new IllegalStateException("출석 체크 가능 시간이 아닙니다.");
-        }
 
         return Attendance.builder()
                 .session(session)
@@ -155,29 +152,31 @@ public class Attendance extends AbstractEntity {
         }
     }
 
-    /**
-     * 사유 결석으로 변경 (스터디장 권한)
-     */
-    public void excuseAbsence(String reason) {
-        if (this.status != AttendanceStatus.ABSENT) {
-            throw new IllegalStateException("결석 상태만 사유 결석으로 변경할 수 있습니다.");
-        }
 
-        this.status = AttendanceStatus.EXCUSED;
-        this.note = reason;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    /**
-     * 지각 처리 (선택적 기능)
-     */
-    public void markAsLate(String reason) {
-        if (this.status == AttendanceStatus.PRESENT) {
-            this.status = AttendanceStatus.LATE;
-            this.note = reason;
-            this.updatedAt = LocalDateTime.now();
-        }
-    }
+    //미처리 기능
+//    /**
+//     * 사유 결석으로 변경 (스터디장 권한)
+//     */
+//    public void excuseAbsence(String reason) {
+//        if (this.status != AttendanceStatus.ABSENT) {
+//            throw new IllegalStateException("결석 상태만 사유 결석으로 변경할 수 있습니다.");
+//        }
+//
+//        this.status = AttendanceStatus.EXCUSED;
+//        this.note = reason;
+//        this.updatedAt = LocalDateTime.now();
+//    }
+//
+//    /**
+//     * 지각 처리 (선택적 기능)
+//     */
+//    public void markAsLate(String reason) {
+//        if (this.status == AttendanceStatus.PRESENT) {
+//            this.status = AttendanceStatus.LATE;
+//            this.note = reason;
+//            this.updatedAt = LocalDateTime.now();
+//        }
+//    }
 
     /**
      * 출석 여부 확인
