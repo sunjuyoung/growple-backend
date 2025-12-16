@@ -6,8 +6,7 @@ import com.grow.common.StudyCreateEvent;
 
 public interface StudyEventPublisher {
 
-     void publishStudy(StudyCreateEvent message);
-
      void publishStudyEnrolledFailedEvent(PaymentEnrollmentEvent event, String message);
 
+     void publishStudyMember(StudyCreateEvent message);
 }

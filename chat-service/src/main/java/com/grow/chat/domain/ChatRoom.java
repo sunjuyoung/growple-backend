@@ -37,6 +37,7 @@ public class ChatRoom extends AbstractEntity {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Builder.Default
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatRoomMember> members = new ArrayList<>();
 

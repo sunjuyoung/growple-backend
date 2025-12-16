@@ -1,6 +1,7 @@
 package com.grow.study.application;
 
 
+import com.grow.common.ChatRoomResponse;
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.application.required.ChatRestClient;
@@ -30,6 +31,7 @@ public class StudyService implements StudyRegister {
     private final S3FileUpload s3FileUpload;
     private final StudyRepository studyRepository;
     private final ChatRestClient chatRestClient;
+    private final StudyEventPublisher studyEventPublisher;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
@@ -92,7 +94,7 @@ public class StudyService implements StudyRegister {
             // 스터디 저장
             Study savedStudy = studyRepository.save(study);
 
-            chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle());
+             chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle(),leaderId);
 
         return StudyRegisterResponse.from(savedStudy);
     }
@@ -124,8 +126,13 @@ public class StudyService implements StudyRegister {
 
         studyRepository.save(study);
 
-        //todo roomId??? 채팅멤버는 스케쥴로하는게
-       // chatRestClient.createChatRoomMember()
+        studyEventPublisher.publishStudyMember(
+                StudyCreateEvent.of(
+                        memberId,studyId,"studyMemberCreate",null
+                )
+        );
+
+
     }
 
     public void changeStudyStatus(Long studyId, Long leaderId) {

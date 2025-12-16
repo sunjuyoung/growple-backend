@@ -19,7 +19,7 @@ public class StudyEventHandler {
     private final StudyProducer studyProducer;
 
     //참여 결제가 완료되었다 해당 스터디에 멤버로 등록
-    @KafkaListener(topics = Topcis.PAYMENT_ENROLLED, groupId = "study-service-group")
+    @KafkaListener(topics = Topics.PAYMENT_ENROLLED, groupId = "study-service-group")
     public void handlePaymentEnroll(PaymentEnrollmentEvent event) {
         try {
             studyRegister.enrollment(
@@ -35,7 +35,7 @@ public class StudyEventHandler {
     }
 
     //생성 결제가 완료 -> RECRUITING 상태로 변경
-    @KafkaListener(topics = Topcis.STUDY_CREATED, groupId = "study-service-group")
+    @KafkaListener(topics = Topics.STUDY_CREATED, groupId = "study-service-group")
     public void handlePaymentStudy(StudyCreateEvent event) {
         studyRegister.changeStudyStatus(event.studyId(), event.userId());
     }

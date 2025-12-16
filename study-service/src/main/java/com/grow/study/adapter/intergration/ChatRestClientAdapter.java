@@ -2,6 +2,7 @@ package com.grow.study.adapter.intergration;
 
 import com.grow.common.ChatRoomMemberRequest;
 import com.grow.common.ChatRoomResponse;
+import com.grow.common.InternalRequest;
 import com.grow.study.application.required.ChatRestClient;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,12 @@ public class ChatRestClientAdapter implements ChatRestClient {
     }
 
     @Override
-    public ChatRoomResponse createChatRoom(Long studyId, String roomName) {
+    public ChatRoomResponse createChatRoom(Long studyId, String roomName, Long userId) {
+
+        InternalRequest request = new InternalRequest(studyId, roomName, userId);
         return restClient.post()
-                .uri("http://chat-service/api/chat/rooms?studyId={studyId}&roomName={roomName}",
-                        studyId,roomName)
+                .uri("http://chat-service/api/chat/internal/rooms/member")
+                .body(request)
                 .retrieve()
                 .body(ChatRoomResponse.class);
 

@@ -1,6 +1,5 @@
 package com.grow.study.adapter.intergration;
 
-import com.grow.common.DepositDeductionEvent;
 import com.grow.common.PaymentEnrollmentEvent;
 import com.grow.common.RefundRequestEvent;
 import com.grow.study.application.required.StudyEventPublisher;
@@ -18,11 +17,6 @@ public class StudyProducer implements StudyEventPublisher {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
-    public void publishStudy(StudyCreateEvent message){
-        kafkaTemplate.send(Topcis.STUDY_CREATED, message);
-    }
-
-    @Override
     public void publishStudyEnrolledFailedEvent(PaymentEnrollmentEvent event, String reason) {
         RefundRequestEvent refundRequestEvent = RefundRequestEvent.of(
                 event.userId(),
@@ -32,7 +26,12 @@ public class StudyProducer implements StudyEventPublisher {
                 event.paymentKey(),
                 reason
         );
-        kafkaTemplate.send(Topcis.STUDY_ENROLLMENT_FAILED, refundRequestEvent);
+        kafkaTemplate.send(Topics.STUDY_ENROLLMENT_FAILED, refundRequestEvent);
     }
+
+    public void publishStudyMember(StudyCreateEvent message){
+        kafkaTemplate.send(Topics.STUDY_MEMBER_CREATED, message);
+    }
+
 
 }

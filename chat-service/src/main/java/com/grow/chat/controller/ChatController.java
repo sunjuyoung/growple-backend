@@ -7,6 +7,7 @@ import com.grow.chat.dto.ChatRoomResponse;
 import com.grow.chat.dto.UnreadMessageCountResponse;
 import com.grow.chat.service.ChatMessageService;
 import com.grow.chat.service.ChatRoomService;
+import com.grow.common.InternalRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -107,7 +108,14 @@ public class ChatController {
         return  new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "채팅방, 채팅멤버 생성", description = " 스터디 생성시 해당 채팅방 과 멤버 생성합니다")
+    @PostMapping("/internal/rooms/member")
+    public ResponseEntity<ChatRoomResponse> createChatRoomMemberInternal(
+            @RequestBody InternalRequest request) {
 
+        ChatRoomResponse response = chatRoomService.internalRequest(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }
 

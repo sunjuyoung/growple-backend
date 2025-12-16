@@ -173,6 +173,7 @@ public class StudyQueryService implements StudyFinder {
         }
 
         return StudyDashboardResponse.builder()
+                .id(studyId)
                 .title(study.getTitle())
                 .category(study.getCategory())
                 .level(study.getLevel())

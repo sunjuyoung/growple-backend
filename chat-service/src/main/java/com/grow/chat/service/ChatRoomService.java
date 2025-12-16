@@ -5,6 +5,7 @@ import com.grow.chat.domain.ChatRoomMember;
 import com.grow.chat.dto.ChatRoomResponse;
 import com.grow.chat.repository.ChatRoomMemberRepository;
 import com.grow.chat.repository.ChatRoomRepository;
+import com.grow.common.InternalRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,22 @@ public class ChatRoomService {
 
         ChatRoom chatRoom = chatRoomRepository.findByIdAndStudyId(roomId, studyId).orElseThrow();
 
+        ChatRoom savedRoom = getChatRoom(userId, chatRoom);
+
+        return ChatRoomResponse.from(savedRoom);
+    }
+
+    @Transactional
+    public ChatRoomResponse createChatRoomMember(Long studyId,  Long userId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findByStudyId(studyId).orElseThrow();
+
+        ChatRoom savedRoom = getChatRoom(userId, chatRoom);
+
+        return ChatRoomResponse.from(savedRoom);
+    }
+
+    private ChatRoom getChatRoom(Long userId, ChatRoom chatRoom) {
         ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, userId);
 
         chatRoom.getMembers().add(chatRoomMember);
@@ -51,10 +68,8 @@ public class ChatRoomService {
 
         ChatRoom savedRoom = chatRoomRepository.save(chatRoom);
         chatRoomMemberRepository.save(chatRoomMember);
-
-        return ChatRoomResponse.from(savedRoom);
+        return savedRoom;
     }
-
 
     @Transactional
     public ChatRoom joinChatRoom(Long chatRoomId, Long memberId) {
@@ -95,5 +110,35 @@ public class ChatRoomService {
     public ChatRoom getChatRoomEntity(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+    }
+
+    @Transactional
+    public ChatRoomResponse internalRequest(InternalRequest request) {
+        ChatRoom chatRoom = createChatRoomEntity(request.studyId(), request.roomName());
+
+        ChatRoomMember chatRoomMember = addMember(chatRoom, request.userId());
+
+        chatRoomMemberRepository.save(chatRoomMember);
+
+        return ChatRoomResponse.from(chatRoom);
+    }
+
+    private ChatRoom createChatRoomEntity(Long studyId, String roomName) {
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .studyId(studyId)
+                .name(roomName)
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return chatRoomRepository.save(chatRoom);
+    }
+
+    private ChatRoomMember addMember(ChatRoom chatRoom, Long userId) {
+        ChatRoomMember member = ChatRoomMember.of(chatRoom, userId);
+        chatRoom.getMembers().add(member);
+        member.assignChatRoom(chatRoom);
+        return member;
     }
 }

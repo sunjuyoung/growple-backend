@@ -13,6 +13,7 @@ import java.util.Set;
 @Builder
 public class StudyDashboardResponse {
 
+    private Long id;
     // 스터디 기본 정보
     private String title;
     private StudyCategory category;

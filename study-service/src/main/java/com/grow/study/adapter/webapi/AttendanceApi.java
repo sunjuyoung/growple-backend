@@ -52,7 +52,6 @@ public class AttendanceApi {
                 userId
         );
 
-        log.info("출석 체크 완료 - userId: {}, sessionId: {}", userId, request.sessionId());
         return ResponseEntity.ok(response);
     }
 
