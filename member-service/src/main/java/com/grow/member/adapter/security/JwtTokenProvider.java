@@ -43,6 +43,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .claim("userId", member.getId().toString())
                 .claim("email", member.getEmail().address())
                 .claim("roles", List.of(member.getRole().name()))
+                .claim("nickname", member.getNickname())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)

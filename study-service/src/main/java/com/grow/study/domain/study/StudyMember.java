@@ -39,6 +39,12 @@ public class StudyMember extends AbstractEntity {
     @Comment("회원 ID")
     private Long memberId;
 
+    @Column(name = "nickname")
+    private String nickname;
+
+    @Column(name = "email")
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Comment("역할")
@@ -66,7 +72,7 @@ public class StudyMember extends AbstractEntity {
 
     @Column
     @Comment("차감된 금액")
-    private Integer deductedDeposit;
+    private Integer deductedDeposit = 0;
 
     // ==================== 출석 정보 ====================
 
@@ -109,33 +115,37 @@ public class StudyMember extends AbstractEntity {
             Study study,
             Long memberId,
             StudyMemberRole role,
-            Integer depositPaid
+            Integer depositPaid,
+            String nickname
     ) {
         this.study = study;
         this.memberId = memberId;
         this.role = role;
         this.depositPaid = depositPaid;
+        this.nickname = nickname;
         this.joinedAt = LocalDateTime.now();
     }
 
     /**
      * 스터디장 생성
      */
-    public static StudyMember createLeader(Study study, Long leaderId) {
+    public static StudyMember createLeader(Study study, Long leaderId, Integer depositPaid,String nickname) {
         return StudyMember.builder()
                 .study(study)
                 .memberId(leaderId)
+                .nickname(nickname)
                 .role(StudyMemberRole.LEADER)
-                .depositPaid(0) // 스터디장은 보증금 없음
+                .depositPaid(depositPaid)
                 .build();
     }
 
     /**
      * 일반 참가자 생성
      */
-    public static StudyMember createMember(Study study, Long memberId, Integer depositPaid) {
+    public static StudyMember createMember(Study study, Long memberId, Integer depositPaid,String nickname) {
         return StudyMember.builder()
                 .study(study)
+                .nickname(nickname)
                 .memberId(memberId)
                 .role(StudyMemberRole.MEMBER)
                 .depositPaid(depositPaid)

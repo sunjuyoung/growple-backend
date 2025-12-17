@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/studies/{studyId}/posts")
+@RequestMapping("/api/study/{studyId}/posts")
 @Tag(name = "Post", description = "스터디 게시판 API")
 public class PostApi {
 
@@ -46,11 +46,10 @@ public class PostApi {
             @PathVariable Long studyId,
             @Parameter(description = "사용자 ID", required = true)
             @RequestHeader("X-User-Id") Long userId,
-            @Parameter(description = "사용자 닉네임", required = true)
-            @RequestHeader("X-User-Nickname") String userNickname,
             @Valid @RequestBody PostCreateRequest request
     ) {
-        PostResponse response = postService.create(studyId, userId, userNickname, request);
+
+        PostResponse response = postService.create(studyId, userId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

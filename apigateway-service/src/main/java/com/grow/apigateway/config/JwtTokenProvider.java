@@ -25,6 +25,7 @@ public class JwtTokenProvider {
     private static final String CLAIM_USER_ID = "userId";
     private static final String CLAIM_EMAIL = "email";
     private static final String CLAIM_ROLES = "roles";
+    private static final String CLAIM_NICKNAME = "nickname";
 
     private final SecurityProperties securityProperties;
     private SecretKey secretKey;
@@ -65,6 +66,7 @@ public class JwtTokenProvider {
             return TokenClaims.builder()
                     .userId(claims.get(CLAIM_USER_ID, String.class))
                     .email(claims.get(CLAIM_EMAIL, String.class))
+                    .nickname(claims.get(CLAIM_NICKNAME, String.class))
                     .roles(extractRoles(claims))
                     .build();
 

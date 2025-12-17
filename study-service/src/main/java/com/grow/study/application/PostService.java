@@ -7,6 +7,7 @@ import com.grow.study.application.dto.board.*;
 import com.grow.study.domain.board.Post;
 import com.grow.study.domain.board.PostCategory;
 import com.grow.study.domain.study.Study;
+import com.grow.study.domain.study.StudyMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,8 +31,15 @@ public class PostService {
      * 게시글 작성
      */
     @Transactional
-    public PostResponse create(Long studyId, Long memberId, String memberNickname, PostCreateRequest request) {
+    public PostResponse create(Long studyId, Long memberId, PostCreateRequest request) {
+
         Study study = findStudyById(studyId);
+
+        StudyMember studyMember = study.getMembers().stream()
+                .filter(m -> m.getMemberId().equals(memberId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
 
         // 스터디 멤버 여부 확인
         validateStudyMember(study, memberId);
@@ -39,9 +47,9 @@ public class PostService {
         Post post;
         if (request.getCategory() == PostCategory.NOTICE) {
             // 공지글은 스터디장만 작성 가능
-            post = Post.createNotice(study, memberId, memberNickname, request.getTitle(), request.getContent());
+            post = Post.createNotice(study, memberId, studyMember.getNickname(), request.getTitle(), request.getContent());
         } else {
-            post = Post.create(study, memberId, memberNickname, request.getCategory(), request.getTitle(), request.getContent());
+            post = Post.create(study, memberId, studyMember.getNickname(), request.getCategory(), request.getTitle(), request.getContent());
         }
 
         Post savedPost = postRepository.save(post);
@@ -178,7 +186,7 @@ public class PostService {
     // ==================== Private Methods ====================
 
     private Study findStudyById(Long studyId) {
-        return studyRepository.findById(studyId)
+        return studyRepository.findStudiesById(studyId)
                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다. studyId: " + studyId));
     }
 

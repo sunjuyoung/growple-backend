@@ -160,19 +160,48 @@ public class StudyQueryService implements StudyFinder {
         // 다가오는 세션의 출석 가능 시간 찾기
         LocalDateTime attendanceCheckStartTime = null;
         LocalDateTime attendanceCheckEndTime = null;
+        boolean isTodayAttendance = false;
 
-        Session nextSession = sessions.stream()
-                .filter(session -> session.getStatus() == SessionStatus.SCHEDULED)
-                .filter(session -> !session.getSessionDate().isBefore(now))
-                .min(Comparator.comparing(Session::getSessionDate))
+
+        // 오늘의 출석 체크 대상 세션 찾기
+        Long todaySessionId = null;
+
+        Session todaySession = sessions.stream()
+                .filter(session -> session.getSessionDate().equals(now))
+                .findFirst()
                 .orElse(null);
 
-        if (nextSession != null) {
-            attendanceCheckStartTime = nextSession.getAttendanceCheckStartTime();
-            attendanceCheckEndTime = nextSession.getAttendanceCheckEndTime();
+//        Session nextSession = sessions.stream()
+//                .filter(session -> session.getStatus() == SessionStatus.SCHEDULED)
+//                .filter(session -> !session.getSessionDate().isBefore(now))
+//                .min(Comparator.comparing(Session::getSessionDate))
+//                .orElse(null);
+
+        if (todaySession != null) {
+            attendanceCheckStartTime = todaySession.getAttendanceCheckStartTime();
+            attendanceCheckEndTime = todaySession.getAttendanceCheckEndTime();
+            todaySessionId = todaySession.getId();
+
+            //오늘 세션이 존재한다면 오늘 세션에 출석 체크 했는지?
+            Attendance attendance1 = todaySession.getAttendances().stream()
+                    .filter(attendance -> attendance.getMemberId().equals(memberId))
+                    .findFirst()
+                    .orElse(null);
+
+            if(attendance1 != null){
+                isTodayAttendance = true;
+            }
+
         }
 
+
+
+
+
+
         return StudyDashboardResponse.builder()
+                .todayAttendance(isTodayAttendance)
+                .todaySessionId(todaySessionId)
                 .id(studyId)
                 .title(study.getTitle())
                 .category(study.getCategory())

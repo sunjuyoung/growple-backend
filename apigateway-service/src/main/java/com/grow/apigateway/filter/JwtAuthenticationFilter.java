@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     private static final String HEADER_USER_ID = "X-User-Id";
     private static final String HEADER_USER_ROLE = "X-User-Role";
     private static final String HEADER_USER_EMAIL = "X-User-Email";
+    private static final String HEADER_USER_NICKNAME = "X-User-Nickname";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityProperties securityProperties;
@@ -57,9 +58,10 @@ public class JwtAuthenticationFilter implements GlobalFilter {
                     .header(HEADER_USER_ID, claims.getUserId())
                     .header(HEADER_USER_ROLE, claims.getRolesAsString())
                     .header(HEADER_USER_EMAIL, claims.getEmail() != null ? claims.getEmail() : "")
+                    .header(HEADER_USER_NICKNAME, claims.getNickname())
                     .build();
 
-            log.debug("인증 성공 - userId: {}, path: {}", claims.getUserId(), path);
+            log.debug("인증 성공 - userId: {}, username:{}, path: {}", claims.getUserId(),claims.getNickname(), path);
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
 

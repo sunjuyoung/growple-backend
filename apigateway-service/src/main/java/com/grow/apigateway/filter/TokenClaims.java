@@ -12,6 +12,7 @@ public class TokenClaims {
     private final String userId;
     private final String email;
     private final List<String> roles;
+    private final String nickname;
 
     public String getRolesAsString() {
         return roles != null ? String.join(",", roles) : "";

@@ -4,11 +4,9 @@ package com.grow.study.application;
 import com.grow.common.ChatRoomResponse;
 import com.grow.study.application.provided.StudyRegister;
 import com.grow.study.application.provided.dto.StudyRegisterResponse;
-import com.grow.study.application.required.ChatRestClient;
-import com.grow.study.application.required.S3FileUpload;
-import com.grow.study.application.required.StudyEventPublisher;
-import com.grow.study.application.required.StudyRepository;
+import com.grow.study.application.required.*;
 import com.grow.common.StudyCreateEvent;
+import com.grow.study.application.required.dto.MemberSummaryResponse;
 import com.grow.study.domain.study.*;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +30,14 @@ public class StudyService implements StudyRegister {
     private final StudyRepository studyRepository;
     private final ChatRestClient chatRestClient;
     private final StudyEventPublisher studyEventPublisher;
+    private final MemberRestClient memberRestClient;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
 
-            String thumbnailUrl = null;
+        MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(leaderId);
+
+        String thumbnailUrl = null;
             if (thumbnail != null && !thumbnail.isEmpty()) {
                 thumbnailUrl = s3FileUpload.uploadImage(thumbnail, "images/study");
             }
@@ -84,7 +85,7 @@ public class StudyService implements StudyRegister {
             );
 
             // 스터디장을 멤버로 추가
-            study.addLeaderAsMember();
+            study.addLeaderAsMember(request.getDeposit(),memberSummary.nickname());
 
             // 스터디 세션 생성
             if (request.getTotalSessions() != null && request.getTotalSessions() > 0) {
@@ -105,6 +106,9 @@ public class StudyService implements StudyRegister {
         Study study = studyRepository.findStudiesById(studyId)
                 .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
+        MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(memberId);
+
+
         // 1. 참여 가능 여부 검증
         if (!study.isJoinable()) {
             throw new NonRetryableException("참여할 수 없는 스터디입니다.");
@@ -121,7 +125,7 @@ public class StudyService implements StudyRegister {
         }
 
         // 4. 멤버 추가 (내부에서 중복 체크)
-        study.addMember(memberId, depositAmount);
+        study.addMember(memberId, depositAmount,memberSummary.nickname());
 
 
         studyRepository.save(study);

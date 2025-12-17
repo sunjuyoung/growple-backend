@@ -2,11 +2,13 @@ package com.grow.study.application;
 
 import com.grow.study.adapter.persistence.PostCommentJpaRepository;
 import com.grow.study.adapter.persistence.PostJpaRepository;
+import com.grow.study.adapter.persistence.StudyMemberJpaRepository;
 import com.grow.study.application.dto.board.CommentCreateRequest;
 import com.grow.study.application.dto.board.CommentResponse;
 import com.grow.study.application.dto.board.CommentUpdateRequest;
 import com.grow.study.domain.board.Post;
 import com.grow.study.domain.board.PostComment;
+import com.grow.study.domain.study.StudyMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,18 +26,22 @@ public class PostCommentService {
 
     private final PostCommentJpaRepository commentRepository;
     private final PostJpaRepository postRepository;
+    private final StudyMemberJpaRepository studyMemberRepository;
 
     /**
      * 댓글 작성
      */
     @Transactional
-    public CommentResponse create(Long postId, Long memberId, String memberNickname, CommentCreateRequest request) {
+    public CommentResponse create(Long postId, Long memberId, Long studyId, CommentCreateRequest request) {
         Post post = findPostById(postId);
+
+        StudyMember studyMember = studyMemberRepository.findByStudyIdAndMemberId(studyId, memberId)
+                .orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
         // 스터디 멤버 여부 확인
         validateStudyMember(post, memberId);
 
-        PostComment comment = PostComment.create(post, memberId, memberNickname, request.getContent());
+        PostComment comment = PostComment.create(post, memberId, studyMember.getNickname(), request.getContent());
         PostComment savedComment = commentRepository.save(comment);
 
         log.info("댓글 작성 완료 - postId: {}, commentId: {}, memberId: {}", postId, savedComment.getId(), memberId);

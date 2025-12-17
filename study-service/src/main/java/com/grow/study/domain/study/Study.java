@@ -384,16 +384,16 @@ public class Study extends AbstractEntity {
     /**
      * 스터디장을 멤버로 추가
      */
-    public void addLeaderAsMember() {
-        StudyMember leader = StudyMember.createLeader(this, this.leaderId);
+    public void addLeaderAsMember(Integer deposit,String nickname) {
+        StudyMember leader = StudyMember.createLeader(this, this.leaderId, deposit,nickname);
         this.members.add(leader);
         this.currentParticipants = 1;
     }
 
     /**
-     * 멤버 추가 (스터디장 제외)
+     * 멤버 추가
      */
-    public void addMember(Long memberId, Integer depositAmount) {
+    public void addMember(Long memberId, Integer depositAmount,String nickname) {
         // 이미 참가한 멤버인지 확인
         boolean alreadyMember = isMember(memberId);
 
@@ -401,7 +401,7 @@ public class Study extends AbstractEntity {
             throw new IllegalStateException("이미 참가한 멤버입니다.");
         }
 
-        StudyMember member = StudyMember.createMember(this, memberId, depositAmount);
+        StudyMember member = StudyMember.createMember(this, memberId, depositAmount,nickname);
         this.members.add(member);
         addParticipant();
     }

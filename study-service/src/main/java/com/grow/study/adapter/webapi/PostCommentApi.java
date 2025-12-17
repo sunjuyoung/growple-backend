@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/studies/{studyId}/posts/{postId}/comments")
+@RequestMapping("/api/study/{studyId}/posts/{postId}/comments")
 @Tag(name = "Comment", description = "게시글 댓글 API")
 public class PostCommentApi {
 
@@ -50,11 +50,9 @@ public class PostCommentApi {
             @PathVariable Long postId,
             @Parameter(description = "사용자 ID", required = true)
             @RequestHeader("X-User-Id") Long userId,
-            @Parameter(description = "사용자 닉네임", required = true)
-            @RequestHeader("X-User-Nickname") String userNickname,
             @Valid @RequestBody CommentCreateRequest request
     ) {
-        CommentResponse response = commentService.create(postId, userId, userNickname, request);
+        CommentResponse response = commentService.create(postId, userId,studyId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

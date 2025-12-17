@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,8 @@ public class PaymentService implements TossPayment {
     }
 
     private String generateOrderId(Long studyId, Long memberId) {
-        return String.format("STUDY_%d_MEMBER_%d", studyId, memberId);
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        return String.format("S%d_M%d_%s", studyId, memberId, uuid.substring(0, 12));
     }
 
     /**

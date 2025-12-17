@@ -1,5 +1,6 @@
 package com.grow.study.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.grow.study.domain.study.StudyCategory;
 import com.grow.study.domain.study.StudyLevel;
 import lombok.Builder;
@@ -14,6 +15,8 @@ import java.util.Set;
 public class StudyDashboardResponse {
 
     private Long id;
+    private Long todaySessionId;
+    private boolean todayAttendance;
     // 스터디 기본 정보
     private String title;
     private StudyCategory category;
