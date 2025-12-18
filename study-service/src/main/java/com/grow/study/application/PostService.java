@@ -4,6 +4,8 @@ import com.grow.study.adapter.persistence.PostJpaRepository;
 import com.grow.study.adapter.persistence.PostCommentJpaRepository;
 import com.grow.study.adapter.persistence.StudyJpaRepository;
 import com.grow.study.application.dto.board.*;
+import com.grow.study.application.required.MemberRestClient;
+import com.grow.study.application.required.dto.MemberSummaryResponse;
 import com.grow.study.domain.board.Post;
 import com.grow.study.domain.board.PostCategory;
 import com.grow.study.domain.study.Study;
@@ -26,12 +28,13 @@ public class PostService {
     private final PostJpaRepository postRepository;
     private final PostCommentJpaRepository commentRepository;
     private final StudyJpaRepository studyRepository;
+    private final MemberRestClient memberRestClient;
 
     /**
      * 게시글 작성
      */
     @Transactional
-    public PostResponse create(Long studyId, Long memberId, PostCreateRequest request) {
+    public Long create(Long studyId, Long memberId, PostCreateRequest request) {
 
         Study study = findStudyById(studyId);
 
@@ -54,7 +57,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        return PostResponse.from(savedPost, memberId);
+        return savedPost.getId();
     }
 
     /**
@@ -66,8 +69,9 @@ public class PostService {
         // 조회수 증가
         // 레디스 or 필요없는 기능일듯
        // postRepository.incrementViewCount(postId);
+        MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(memberId);
 
-        return PostResponse.from(post, memberId);
+        return PostResponse.from(post, memberSummary);
     }
 
     /**
@@ -124,7 +128,7 @@ public class PostService {
      * 게시글 수정
      */
     @Transactional
-    public PostResponse update(Long postId, Long memberId, PostUpdateRequest request) {
+    public Long update(Long postId, Long memberId, PostUpdateRequest request) {
         Post post = findPostById(postId);
 
         // 수정 권한 확인
@@ -133,7 +137,7 @@ public class PostService {
         post.update(request.getTitle(), request.getContent());
         log.info("게시글 수정 완료 - postId: {}, memberId: {}", postId, memberId);
 
-        return PostResponse.from(post, memberId);
+        return postId;
     }
 
     /**
@@ -157,7 +161,7 @@ public class PostService {
      * 게시글 고정/고정해제 (스터디장만)
      */
     @Transactional
-    public PostResponse togglePin(Long postId, Long memberId) {
+    public Long togglePin(Long postId, Long memberId) {
         Post post = findPostById(postId);
 
         // 스터디장 여부 확인
@@ -173,7 +177,7 @@ public class PostService {
             log.info("게시글 고정 - postId: {}", postId);
         }
 
-        return PostResponse.from(post, memberId);
+        return postId;
     }
 
     /**

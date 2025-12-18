@@ -41,7 +41,7 @@ public class PostApi {
             @ApiResponse(responseCode = "403", description = "스터디 멤버가 아님")
     })
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(
+    public ResponseEntity<Long> createPost(
             @Parameter(description = "스터디 ID", required = true)
             @PathVariable Long studyId,
             @Parameter(description = "사용자 ID", required = true)
@@ -49,8 +49,8 @@ public class PostApi {
             @Valid @RequestBody PostCreateRequest request
     ) {
 
-        PostResponse response = postService.create(studyId, userId, request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        Long postId = postService.create(studyId, userId, request);
+        return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
     @Operation(summary = "게시글 상세 조회", description = "게시글 상세 내용을 조회합니다. 조회수가 증가합니다.")
@@ -82,7 +82,7 @@ public class PostApi {
             @PathVariable Long studyId,
             @Parameter(description = "카테고리 필터 (선택)")
             @RequestParam(required = false) PostCategory category,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<PostListResponse> response;
         if (category != null) {
@@ -133,7 +133,7 @@ public class PostApi {
             @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PutMapping("/{postId}")
-    public ResponseEntity<PostResponse> updatePost(
+    public ResponseEntity<Long> updatePost(
             @Parameter(description = "스터디 ID", required = true)
             @PathVariable Long studyId,
             @Parameter(description = "게시글 ID", required = true)
@@ -142,8 +142,8 @@ public class PostApi {
             @RequestHeader("X-User-Id") Long userId,
             @Valid @RequestBody PostUpdateRequest request
     ) {
-        PostResponse response = postService.update(postId, userId, request);
-        return ResponseEntity.ok(response);
+         postService.update(postId, userId, request);
+        return ResponseEntity.ok(postId);
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다. 작성자 또는 스터디장만 가능합니다.")
@@ -172,7 +172,7 @@ public class PostApi {
             @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PatchMapping("/{postId}/pin")
-    public ResponseEntity<PostResponse> togglePin(
+    public ResponseEntity<Long> togglePin(
             @Parameter(description = "스터디 ID", required = true)
             @PathVariable Long studyId,
             @Parameter(description = "게시글 ID", required = true)
@@ -180,7 +180,7 @@ public class PostApi {
             @Parameter(description = "사용자 ID", required = true)
             @RequestHeader("X-User-Id") Long userId
     ) {
-        PostResponse response = postService.togglePin(postId, userId);
-        return ResponseEntity.ok(response);
+        Long id = postService.togglePin(postId, userId);
+        return ResponseEntity.ok(id);
     }
 }

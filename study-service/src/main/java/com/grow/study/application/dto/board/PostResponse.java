@@ -1,5 +1,6 @@
 package com.grow.study.application.dto.board;
 
+import com.grow.study.application.required.dto.MemberSummaryResponse;
 import com.grow.study.domain.board.Post;
 import com.grow.study.domain.board.PostCategory;
 import lombok.Builder;
@@ -15,6 +16,8 @@ public class PostResponse {
     private Long studyId;
     private Long writerId;
     private String writerNickname;
+    private String profileImageUrl;
+    private int level;
     private PostCategory category;
     private String categoryName;
     private String title;
@@ -45,7 +48,7 @@ public class PostResponse {
                 .build();
     }
 
-    public static PostResponse from(Post post, Long currentMemberId) {
+    public static PostResponse from(Post post, MemberSummaryResponse member) {
         return PostResponse.builder()
                 .id(post.getId())
                 .studyId(post.getStudy().getId())
@@ -60,8 +63,10 @@ public class PostResponse {
                 .pinned(post.getPinned())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .isWriter(post.isWriter(currentMemberId))
-                .canModify(post.canModify(currentMemberId))
+                .isWriter(post.isWriter(member.id()))
+                .canModify(post.canModify(member.id()))
+                .level(member.level())
+                .profileImageUrl(member.profileImageUrl())
                 .build();
     }
 }
