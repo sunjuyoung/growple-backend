@@ -28,9 +28,9 @@ public class AttendanceScheduler {
      * - 5분마다 실행
      * - 출석 마감 시간이 지난 세션 조회
      * - 출석 체크하지 않은 멤버 결석 처리
-     * - 보증금 차감 이벤트 발행
+     * - 보증금 차감
      */
-    @Scheduled(cron = "0 */20 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void processExpiredSessions() {
         log.info("출석 마감 처리 스케줄러 시작");

@@ -246,8 +246,8 @@ public class Study extends AbstractEntity {
      * 스터디 시작
      */
     public void start() {
-        if (this.status != StudyStatus.RECRUITING) {
-            throw new IllegalStateException("모집 중인 스터디만 시작할 수 있습니다.");
+        if (this.status != StudyStatus.RECRUITING && this.status != StudyStatus.RECRUIT_CLOSED) {
+            throw new IllegalStateException("모집 중이거나 모집 마감된 스터디만 시작할 수 있습니다.");
         }
         if (this.currentParticipants < this.minParticipants) {
             throw new IllegalStateException("최소 인원이 미달되었습니다.");
@@ -284,6 +284,21 @@ public class Study extends AbstractEntity {
     }
 
     /**
+     * 모집 마감 처리 (최소 인원 충족 시)
+     */
+    public void closeRecruitment() {
+        if (this.status != StudyStatus.RECRUITING) {
+            throw new IllegalStateException("모집 중인 스터디만 마감할 수 있습니다.");
+        }
+        if (!hasMinimumParticipants()) {
+            throw new IllegalStateException("최소 인원이 충족되지 않았습니다.");
+        }
+
+        this.status = StudyStatus.RECRUIT_CLOSED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
      * 스터디 조기 종료
      */
     public void terminateEarly() {
@@ -291,7 +306,7 @@ public class Study extends AbstractEntity {
             throw new IllegalStateException("진행 중인 스터디만 조기 종료할 수 있습니다.");
         }
 
-        this.status = StudyStatus.EARLY_TERMINATED;
+        //this.status = StudyStatus.EARLY_TERMINATED;
         this.completedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

@@ -5,10 +5,13 @@ import com.grow.study.adapter.persistence.dto.StudyListResponse;
 import com.grow.study.adapter.persistence.dto.StudySearchCondition;
 import com.grow.study.application.required.dto.StudyWithMemberCountDto;
 import com.grow.study.domain.study.Study;
+import com.grow.study.domain.study.StudyStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface StudyRepository {
@@ -31,4 +34,9 @@ public interface StudyRepository {
 
     Optional<Study> findStudyDashBoard(@Param("studyId") Long studyId);
 
+    List<Study> findByStatusAndRecruitEndDate(StudyStatus status, LocalDate recruitEndDate);
+
+    List<Study> findByStatusAndStartDate(StudyStatus status, LocalDate startDate);
+
+    List<Study> findByStatusAndEndDateBefore(StudyStatus status, LocalDate today);
 }

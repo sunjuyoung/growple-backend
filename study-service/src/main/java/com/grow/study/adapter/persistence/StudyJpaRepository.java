@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,4 +45,49 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRep
 
 
     Optional<Study> findById(Long studyId);
+
+    /**
+     * 모집 마감 처리 대상 스터디 조회
+     * - 상태가 RECRUITING이면서
+     * - 모집 종료일(recruitEndDate)이 오늘인 스터디
+     */
+    @Query("""
+    SELECT s FROM Study s
+    WHERE s.status = :status
+    AND s.schedule.recruitEndDate = :recruitEndDate
+    """)
+    List<Study> findByStatusAndRecruitEndDate(
+            @Param("status") StudyStatus status,
+            @Param("recruitEndDate") LocalDate recruitEndDate
+    );
+
+    /**
+     * 스터디 시작 대상 조회
+     * - 상태가 RECRUIT_CLOSED이면서
+     * - 시작일(startDate)이 오늘인 스터디
+     */
+    @Query("""
+    SELECT s FROM Study s
+    WHERE s.status = :status
+    AND s.schedule.startDate = :startDate
+    """)
+    List<Study> findByStatusAndStartDate(
+            @Param("status") StudyStatus status,
+            @Param("startDate") LocalDate startDate
+    );
+
+    /**
+     * 스터디 종료 대상 조회
+     * - 상태가 IN_PROGRESS이면서
+     * - 종료일(endDate)이 오늘 이전인 스터디
+     */
+    @Query("""
+    SELECT s FROM Study s
+    WHERE s.status = :status
+    AND s.schedule.endDate < :today
+    """)
+    List<Study> findByStatusAndEndDateBefore(
+            @Param("status") StudyStatus status,
+            @Param("today") LocalDate today
+    );
 }

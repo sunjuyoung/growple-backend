@@ -6,11 +6,14 @@ import com.grow.study.adapter.persistence.dto.StudySearchCondition;
 import com.grow.study.application.required.StudyRepository;
 import com.grow.study.application.required.dto.StudyWithMemberCountDto;
 import com.grow.study.domain.study.Study;
+import com.grow.study.domain.study.StudyStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -60,5 +63,18 @@ public class StudyRepositoryAdapter implements StudyRepository {
         return studyJpaRepository.findStudyDashBoard(studyId);
     }
 
+    @Override
+    public List<Study> findByStatusAndRecruitEndDate(StudyStatus status, LocalDate recruitEndDate) {
+        return studyJpaRepository.findByStatusAndRecruitEndDate(status, recruitEndDate);
+    }
 
+    @Override
+    public List<Study> findByStatusAndStartDate(StudyStatus status, LocalDate startDate) {
+        return studyJpaRepository.findByStatusAndStartDate(status, startDate);
+    }
+
+    @Override
+    public List<Study> findByStatusAndEndDateBefore(StudyStatus status, LocalDate today) {
+        return studyJpaRepository.findByStatusAndEndDateBefore(status, today);
+    }
 }
