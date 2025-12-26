@@ -1,15 +1,19 @@
 package com.grow.study.adapter.scheduler;
 
+import com.grow.study.application.required.SchedulerJobRepository;
 import com.grow.study.application.required.StudyRepository;
+import com.grow.study.domain.scheduler.JobType;
+import com.grow.study.domain.scheduler.SchedulerJob;
 import com.grow.study.domain.study.Study;
-import com.grow.study.domain.study.StudyStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -24,6 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecruitmentDeadlineScheduler {
 
+    private static final int BATCH_SIZE = 100;
+    private static final JobType JOB_TYPE = JobType.RECRUITMENT_DEADLINE;
+
+    private final SchedulerJobRepository jobRepository;
     private final StudyRepository studyRepository;
 
     @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
@@ -32,43 +40,67 @@ public class RecruitmentDeadlineScheduler {
         log.info("모집 마감 처리 스케줄러 시작");
 
         LocalDate today = LocalDate.now();
-        List<Study> targetStudies = studyRepository.findByStatusAndRecruitEndDate(
-                StudyStatus.RECRUITING,
-                today
-        );
+        LocalDateTime now = LocalDateTime.now();
 
-        if (targetStudies.isEmpty()) {
-            log.info("처리할 모집 마감 대상 스터디 없음");
+        List<SchedulerJob> jobs = jobRepository.findClaimableJobs(JOB_TYPE, today, now, BATCH_SIZE);
+
+        if (jobs.isEmpty()) {
+            log.info("처리할 모집 마감 Job 없음");
             return;
         }
 
-        log.info("모집 마감 대상 스터디 {}개 처리 시작", targetStudies.size());
+        log.info("모집 마감 Job {}개 처리 시작", jobs.size());
 
-        int cancelledCount = 0;
         int closedCount = 0;
+        int cancelledCount = 0;
+        int failedCount = 0;
 
-        for (Study study : targetStudies) {
+        for (SchedulerJob job : jobs) {
             try {
+                job.claim(now);
+                jobRepository.save(job);
+
+                Study study = studyRepository.findById(job.getTargetId())
+                        .orElseThrow(() -> new IllegalStateException("Study not found: " + job.getTargetId()));
+
                 if (study.hasMinimumParticipants()) {
                     study.closeRecruitment();
                     closedCount++;
                     log.info("스터디 모집 마감 완료 - studyId: {}, title: {}, participants: {}/{}",
                             study.getId(), study.getTitle(),
                             study.getCurrentParticipants(), study.getMinParticipants());
+                    studyRepository.save(study);
                 } else {
                     study.cancel();
                     cancelledCount++;
+                    studyRepository.save(study);
                     log.info("스터디 최소 인원 미달 취소 - studyId: {}, title: {}, participants: {}/{}",
                             study.getId(), study.getTitle(),
                             study.getCurrentParticipants(), study.getMinParticipants());
                     // TODO: 참가자 결제 전액 포인트 환급 처리
                 }
+
+                job.complete(now);
+                jobRepository.save(job);
+
+            } catch (OptimisticLockingFailureException e) {
+                log.debug("Job 선점 실패 (다른 인스턴스가 처리 중) - jobId: {}", job.getId());
+                continue;
             } catch (Exception e) {
-                log.error("스터디 모집 마감 처리 실패 - studyId: {}, error: {}",
-                        study.getId(), e.getMessage(), e);
+                log.error("모집 마감 처리 실패 - jobId: {}, studyId: {}, error: {}",
+                        job.getId(), job.getTargetId(), e.getMessage(), e);
+                job.fail(e.getMessage(), calculateNextRetry(job.getRetryCount()));
+                jobRepository.save(job);
+                failedCount++;
             }
         }
 
-        log.info("모집 마감 처리 스케줄러 완료 - 마감: {}개, 취소: {}개", closedCount, cancelledCount);
+        log.info("모집 마감 처리 스케줄러 완료 - 마감: {}개, 취소: {}개, 실패: {}개",
+                closedCount, cancelledCount, failedCount);
+    }
+
+    private LocalDateTime calculateNextRetry(int currentRetryCount) {
+        int delayMinutes = 5 * (int) Math.pow(3, currentRetryCount);
+        return LocalDateTime.now().plusMinutes(delayMinutes);
     }
 }

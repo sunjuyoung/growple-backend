@@ -1,6 +1,7 @@
 package com.grow.study.domain.study;
 
 import com.grow.study.domain.AbstractEntity;
+import com.grow.study.domain.event.StudyStatusChangedEvent;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -256,6 +257,15 @@ public class Study extends AbstractEntity {
         this.status = StudyStatus.IN_PROGRESS;
         this.startedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
+        // 스터디 상태 변경 이벤트 발행 (STUDY_COMPLETION Job 생성용)
+        registerEvent(StudyStatusChangedEvent.of(
+                this.getId(),
+                StudyStatus.IN_PROGRESS,
+                this.schedule.getRecruitEndDate(),
+                this.schedule.getStartDate(),
+                this.schedule.getEndDate()
+        ));
     }
 
     /**
@@ -296,6 +306,14 @@ public class Study extends AbstractEntity {
 
         this.status = StudyStatus.RECRUIT_CLOSED;
         this.updatedAt = LocalDateTime.now();
+
+        registerEvent(StudyStatusChangedEvent.of(
+                this.getId(),
+                StudyStatus.RECRUIT_CLOSED,
+                this.schedule.getRecruitEndDate(),
+                this.schedule.getStartDate(),
+                this.schedule.getEndDate()
+        ));
     }
 
     /**
@@ -358,6 +376,14 @@ public class Study extends AbstractEntity {
 
         this.status = StudyStatus.RECRUITING;
         this.updatedAt = LocalDateTime.now();
+
+        registerEvent(StudyStatusChangedEvent.of(
+                this.getId(),
+                StudyStatus.RECRUITING,
+                this.schedule.getRecruitEndDate(),
+                this.schedule.getStartDate(),
+                this.schedule.getEndDate()
+        ));
     }
 
     /**

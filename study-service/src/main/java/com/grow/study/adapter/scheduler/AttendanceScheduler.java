@@ -14,6 +14,10 @@ import java.util.List;
 
 /**
  * 출석 관련 스케줄러
+ * - 5분마다 실행
+ * - 출석 마감 시간이 지난 세션 조회
+ * - 출석 체크하지 않은 멤버 결석 처리
+ * - 보증금 차감
  */
 @Slf4j
 @Component
@@ -23,13 +27,6 @@ public class AttendanceScheduler {
     private final SessionJpaRepository sessionRepository;
     private final AttendanceService attendanceService;
 
-    /**
-     * 마감된 세션의 결석 처리 및 보증금 차감
-     * - 5분마다 실행
-     * - 출석 마감 시간이 지난 세션 조회
-     * - 출석 체크하지 않은 멤버 결석 처리
-     * - 보증금 차감
-     */
     @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void processExpiredSessions() {
@@ -45,28 +42,29 @@ public class AttendanceScheduler {
 
         log.info("마감 세션 {}개 처리 시작", expiredSessions.size());
 
+        int processedCount = 0;
+        int failedCount = 0;
+
         for (Session session : expiredSessions) {
             try {
-                processSession(session);
+                log.info("세션 결석 처리 시작 - sessionId: {}, studyId: {}, sessionNumber: {}",
+                        session.getId(), session.getStudy().getId(), session.getSessionNumber());
+
+                // 결석 처리 + 보증금 차감 이벤트 발행
+                attendanceService.processAbsencesWithDeduction(session.getId());
+
+                // 처리 완료 마킹
+                session.markAttendanceProcessed();
+
+                processedCount++;
+                log.info("세션 결석 처리 완료 - sessionId: {}", session.getId());
+
             } catch (Exception e) {
                 log.error("세션 처리 실패 - sessionId: {}, error: {}", session.getId(), e.getMessage(), e);
-                // 개별 세션 실패해도 다른 세션 계속 처리
+                failedCount++;
             }
         }
 
-        log.info("출석 마감 처리 스케줄러 완료");
-    }
-
-    private void processSession(Session session) {
-        log.info("세션 결석 처리 시작 - sessionId: {}, studyId: {}, sessionNumber: {}",
-                session.getId(), session.getStudy().getId(), session.getSessionNumber());
-
-        // 결석 처리 + 보증금 차감 이벤트 발행
-        attendanceService.processAbsencesWithDeduction(session.getId());
-
-        // 처리 완료 마킹
-        session.markAttendanceProcessed();
-
-        log.info("세션 결석 처리 완료 - sessionId: {}", session.getId());
+        log.info("출석 마감 처리 스케줄러 완료 - 처리: {}개, 실패: {}개", processedCount, failedCount);
     }
 }

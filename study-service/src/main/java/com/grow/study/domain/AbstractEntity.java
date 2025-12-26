@@ -8,12 +8,13 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.util.Objects;
 
 @MappedSuperclass
 @ToString
-public abstract class AbstractEntity {
+public abstract class AbstractEntity extends AbstractAggregateRoot<AbstractEntity> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

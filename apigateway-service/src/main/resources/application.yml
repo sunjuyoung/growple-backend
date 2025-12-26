@@ -92,6 +92,7 @@ jwt:
     - /api/study/get/**
     - /api/study/list
     - /api/study/pages
+    - /api/scheduler/**
     - /api/chat/**
     - /ws-chat/**
 
