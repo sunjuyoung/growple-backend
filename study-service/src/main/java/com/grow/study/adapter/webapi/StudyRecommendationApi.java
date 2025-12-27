@@ -43,7 +43,7 @@ public class StudyRecommendationApi {
     )
     public ResponseEntity<List<StudyRecommendationResponse>> getSimilarStudies(
             @PathVariable @Parameter(description = "스터디 ID") Long studyId,
-            @RequestParam(defaultValue = "5") @Positive @Parameter(description = "추천 개수") int limit
+            @RequestParam(defaultValue = "3") @Positive @Parameter(description = "추천 개수") int limit
     ) {
         log.info("GET /api/v1/studies/{}/recommendations/similar?limit={}", studyId, limit);
 
