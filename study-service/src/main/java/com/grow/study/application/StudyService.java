@@ -7,10 +7,12 @@ import com.grow.study.application.provided.dto.StudyRegisterResponse;
 import com.grow.study.application.required.*;
 import com.grow.common.StudyCreateEvent;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
+import com.grow.study.domain.event.StudyCreatedEvent;
 import com.grow.study.domain.study.*;
 import com.grow.study.domain.study.dto.StudyRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,7 @@ public class StudyService implements StudyRegister {
     private final ChatRestClient chatRestClient;
     private final StudyEventPublisher studyEventPublisher;
     private final MemberRestClient memberRestClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public StudyRegisterResponse register(StudyRegisterRequest request, MultipartFile thumbnail, Long leaderId) {
@@ -95,7 +98,24 @@ public class StudyService implements StudyRegister {
             // 스터디 저장
             Study savedStudy = studyRepository.save(study);
 
-             chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle(),leaderId);
+            // 채팅방 생성
+            chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle(),leaderId);
+
+            // pgvector Document 생성을 위한 이벤트 발행 (저장 후 ID 포함)
+            eventPublisher.publishEvent(new StudyCreatedEvent(
+                    savedStudy.getId(),
+                    savedStudy.getTitle(),
+                    savedStudy.getIntroduction(),
+                    savedStudy.getCurriculum(),
+                    savedStudy.getLeaderMessage(),
+                    savedStudy.getCategory(),
+                    savedStudy.getLevel(),
+                    savedStudy.getStatus(),
+                    savedStudy.getMinParticipants(),
+                    savedStudy.getMaxParticipants(),
+                    savedStudy.getSchedule().getStartDate(),
+                    savedStudy.getSchedule().getEndDate()
+            ));
 
         return StudyRegisterResponse.from(savedStudy);
     }
