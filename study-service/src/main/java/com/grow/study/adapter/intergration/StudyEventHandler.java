@@ -19,6 +19,7 @@ public class StudyEventHandler {
 
     private final StudyRegister studyRegister;
     private final StudyProducer studyProducer;
+    private final SlackNotifier slackNotifier;
 
     //참여 결제가 완료되었다 해당 스터디에 멤버로 등록
     @KafkaListener(
@@ -41,6 +42,8 @@ public class StudyEventHandler {
         }catch (NonRetryableException e){
             log.warn("비즈니스 오류로 즉시 환불: {}", e.getMessage());
             studyProducer.publishStudyEnrolledFailedEvent(event, e.getMessage());
+        }catch (Exception e){
+            slackNotifier.sendError(" 스터디 참여 등록 중 오류 발생: " , e.getMessage());
         }
 
     }
@@ -57,7 +60,12 @@ public class StudyEventHandler {
             dltTopicSuffix = ".dlt"
     )
     public void handlePaymentStudy(StudyCreateEvent event) {
-        studyRegister.changeStudyStatus(event.studyId(), event.userId());
+        try {
+            studyRegister.changeStudyStatus(event.studyId(), event.userId());
+        }catch (Exception e){
+            slackNotifier.sendError(" 생성 결제가 완료 -> RECRUITING 상태로 변경 중 오류 발생: " , e.getMessage());
+        }
+
     }
 
 }

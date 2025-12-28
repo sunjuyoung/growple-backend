@@ -8,6 +8,7 @@ import com.grow.study.domain.study.Study;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class StudyStartScheduler {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        List<SchedulerJob> jobs = jobRepository.findClaimableJobs(JOB_TYPE, today, now, BATCH_SIZE);
+        List<SchedulerJob> jobs = jobRepository.findClaimableJobs(JOB_TYPE, today, now, PageRequest.of(0, BATCH_SIZE));
 
         if (jobs.isEmpty()) {
             log.info("처리할 스터디 시작 Job 없음");

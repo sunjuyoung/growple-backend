@@ -27,8 +27,6 @@ public class StudyVectorEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleStudyCreatedEvent(StudyCreatedEvent event) {
-        log.info("Handling StudyCreatedEvent for studyId: {}", event.studyId());
-
         try {
             studyVectorService.createStudyDocument(event.studyId(), event);
             log.info("Successfully created vector document for study: {}", event.studyId());
@@ -36,6 +34,7 @@ public class StudyVectorEventListener {
             log.error("Failed to create vector document for study: {}", event.studyId(), e);
             // 벡터 생성 실패는 스터디 생성에 영향을 주지 않음
             // 추후 재시도 로직 추가 가능
+
         }
     }
 }

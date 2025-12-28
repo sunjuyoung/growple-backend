@@ -2,7 +2,10 @@ package com.grow.study.adapter.persistence;
 
 import com.grow.study.domain.scheduler.JobType;
 import com.grow.study.domain.scheduler.SchedulerJob;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,6 +16,7 @@ import java.util.Optional;
 
 public interface SchedulerJobJpaRepository extends JpaRepository<SchedulerJob, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             SELECT j FROM SchedulerJob j
             WHERE j.jobType = :jobType
@@ -26,7 +30,7 @@ public interface SchedulerJobJpaRepository extends JpaRepository<SchedulerJob, L
             @Param("jobType") JobType jobType,
             @Param("scheduledDate") LocalDate scheduledDate,
             @Param("now") LocalDateTime now,
-            @Param("limit") int limit
+            Pageable pageable
     );
 
     Optional<SchedulerJob> findByJobTypeAndTargetTypeAndTargetIdAndScheduledDate(

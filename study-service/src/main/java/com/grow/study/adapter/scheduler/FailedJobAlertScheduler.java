@@ -1,5 +1,6 @@
 package com.grow.study.adapter.scheduler;
 
+import com.grow.study.adapter.intergration.SlackNotifier;
 import com.grow.study.application.required.SchedulerJobRepository;
 import com.grow.study.domain.scheduler.SchedulerJob;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class FailedJobAlertScheduler {
 
     private final SchedulerJobRepository jobRepository;
+    private final SlackNotifier slackNotifier;
 
     @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
     public void alertFailedJobs() {
@@ -32,22 +34,9 @@ public class FailedJobAlertScheduler {
             return;
         }
 
-        log.warn("=== 재시도 초과 Job 알림 ({} 건) ===", exhaustedJobs.size());
-
-        for (SchedulerJob job : exhaustedJobs) {
-            log.warn("JobId: {}, Type: {}, Target: {}:{}, ScheduledDate: {}, RetryCount: {}, Error: {}",
-                    job.getId(),
-                    job.getJobType(),
-                    job.getTargetType(),
-                    job.getTargetId(),
-                    job.getScheduledDate(),
-                    job.getRetryCount(),
-                    job.getLastError()
-            );
-        }
-
         // TODO: 향후 Slack Webhook 연동
-        // slackNotificationService.sendAlert("재시도 초과 Job " + exhaustedJobs.size() + "건 발견");
+        slackNotifier.sendInfo("재시도 초과 Job " + exhaustedJobs.size() + "건 발견",
+                 String.format("재시도 초과 Job %d건이 발견되었습니다. 자세한 내용은 로그를 확인해주세요.", exhaustedJobs.size()));
 
         log.info("실패 Job 알림 스케줄러 완료");
     }

@@ -4,6 +4,7 @@ import com.grow.study.application.required.SchedulerJobRepository;
 import com.grow.study.domain.scheduler.JobType;
 import com.grow.study.domain.scheduler.SchedulerJob;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -28,8 +29,8 @@ public class SchedulerJobRepositoryAdapter implements SchedulerJobRepository {
     }
 
     @Override
-    public List<SchedulerJob> findClaimableJobs(JobType jobType, LocalDate scheduledDate, LocalDateTime now, int limit) {
-        return jpaRepository.findClaimableJobs(jobType, scheduledDate, now, limit);
+    public List<SchedulerJob> findClaimableJobs(JobType jobType, LocalDate scheduledDate, LocalDateTime now,   Pageable pageable) {
+        return jpaRepository.findClaimableJobs(jobType, scheduledDate, now, pageable);
     }
 
     @Override

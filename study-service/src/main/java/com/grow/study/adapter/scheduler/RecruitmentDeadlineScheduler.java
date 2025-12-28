@@ -1,5 +1,6 @@
 package com.grow.study.adapter.scheduler;
 
+import com.grow.study.adapter.intergration.SlackNotifier;
 import com.grow.study.application.required.SchedulerJobRepository;
 import com.grow.study.application.required.StudyRepository;
 import com.grow.study.domain.scheduler.JobType;
@@ -8,6 +9,7 @@ import com.grow.study.domain.study.Study;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ public class RecruitmentDeadlineScheduler {
 
     private final SchedulerJobRepository jobRepository;
     private final StudyRepository studyRepository;
+    private final SlackNotifier slackNotifier;
 
     @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
     @Transactional
@@ -42,7 +45,7 @@ public class RecruitmentDeadlineScheduler {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        List<SchedulerJob> jobs = jobRepository.findClaimableJobs(JOB_TYPE, today, now, BATCH_SIZE);
+        List<SchedulerJob> jobs = jobRepository.findClaimableJobs(JOB_TYPE, today, now, PageRequest.of(0, BATCH_SIZE));
 
         if (jobs.isEmpty()) {
             log.info("처리할 모집 마감 Job 없음");
@@ -83,9 +86,6 @@ public class RecruitmentDeadlineScheduler {
                 job.complete(now);
                 jobRepository.save(job);
 
-            } catch (OptimisticLockingFailureException e) {
-                log.debug("Job 선점 실패 (다른 인스턴스가 처리 중) - jobId: {}", job.getId());
-                continue;
             } catch (Exception e) {
                 log.error("모집 마감 처리 실패 - jobId: {}, studyId: {}, error: {}",
                         job.getId(), job.getTargetId(), e.getMessage(), e);
@@ -95,6 +95,9 @@ public class RecruitmentDeadlineScheduler {
             }
         }
 
+        slackNotifier.sendInfo("스터디 모집 마감 처리 스케줄러 완료",
+                String.format("모집 마감 처리 완료 - 마감: %d개, 취소: %d개, 실패: %d개",
+                        closedCount, cancelledCount, failedCount));
         log.info("모집 마감 처리 스케줄러 완료 - 마감: {}개, 취소: {}개, 실패: {}개",
                 closedCount, cancelledCount, failedCount);
     }
