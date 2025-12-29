@@ -3,6 +3,7 @@ package com.grow.study.adapter.intergration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class SlackNotifier {
     private final boolean enabled;
 
     public SlackNotifier(
-            RestClient.Builder restClientBuilder,
+             RestClient.Builder restClientBuilder,
             @Value("${slack.webhook.url:}") String webhookUrl,
             @Value("${slack.webhook.enabled:true}") boolean enabled) {
         this.restClient = restClientBuilder.build();

@@ -2,6 +2,7 @@ package com.grow.study.adapter.webapi;
 
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
+import com.grow.study.application.dto.MyStudiesResponse;
 import com.grow.study.application.dto.StudyDashboardResponse;
 import com.grow.study.application.provided.StudyFinder;
 import com.grow.study.application.required.dto.StudySummaryResponse;
@@ -134,5 +135,26 @@ public class StudyQueryApi {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(
+            summary = "내 스터디 목록 조회",
+            description = "현재 로그인한 사용자의 스터디 목록을 참여중, 예정, 완료로 분류하여 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = MyStudiesResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패",
+                    content = @Content
+            )
+    })
+    @GetMapping("/my")
+    public ResponseEntity<MyStudiesResponse> getMyStudies(
+            @RequestHeader("X-User-Id") Long userId) {
+        MyStudiesResponse response = studyFinder.getMyStudies(userId);
+        return ResponseEntity.ok(response);
+    }
 }

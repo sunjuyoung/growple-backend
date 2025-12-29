@@ -1,6 +1,7 @@
 package com.grow.study.domain.board;
 
 import com.grow.study.domain.AbstractEntity;
+import com.grow.study.domain.llm.AiConstants;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -100,7 +101,18 @@ public class PostComment extends AbstractEntity {
         post.increaseCommentCount();
         return comment;
     }
-
+    public static PostComment createAiComment(Post post, String content) {
+        PostComment comment = new PostComment();
+        comment.post = post;
+        comment.writerId = AiConstants.AI_WRITER_ID;
+        comment.writerNickname = AiConstants.AI_WRITER_NICKNAME;
+        comment.content = content;
+      //  comment.aiGenerated = true;
+        comment.deleted = false;
+        comment.createdAt = LocalDateTime.now();
+        comment.updatedAt = LocalDateTime.now();
+        return comment;
+    }
     // ==================== 비즈니스 메서드 ====================
 
     /**

@@ -3,6 +3,7 @@ package com.grow.study.application;
 import com.grow.study.adapter.persistence.PostJpaRepository;
 import com.grow.study.adapter.persistence.PostCommentJpaRepository;
 import com.grow.study.adapter.persistence.StudyJpaRepository;
+import com.grow.study.application.dto.QuestionPostedEvent;
 import com.grow.study.application.dto.board.*;
 import com.grow.study.application.required.MemberRestClient;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
@@ -12,6 +13,7 @@ import com.grow.study.domain.study.Study;
 import com.grow.study.domain.study.StudyMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class PostService {
     private final PostCommentJpaRepository commentRepository;
     private final StudyJpaRepository studyRepository;
     private final MemberRestClient memberRestClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 게시글 작성
@@ -56,6 +59,10 @@ public class PostService {
         }
 
         Post savedPost = postRepository.save(post);
+        // 질문 카테고리일 때만 이벤트 발행
+        if (savedPost.getCategory() == PostCategory.QUESTION) {
+            eventPublisher.publishEvent(new QuestionPostedEvent(savedPost.getId(), savedPost));
+        }
 
         return savedPost.getId();
     }

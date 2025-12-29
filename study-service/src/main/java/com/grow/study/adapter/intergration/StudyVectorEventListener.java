@@ -19,12 +19,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class StudyVectorEventListener {
 
     private final StudyVectorService studyVectorService;
+    private final SlackNotifier slackNotifier;
 
     /**
      * 스터디 생성 후 Document 생성
      * 트랜잭션 커밋 후 비동기로 처리
      */
-    @Async
+    @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleStudyCreatedEvent(StudyCreatedEvent event) {
         try {
@@ -34,6 +35,9 @@ public class StudyVectorEventListener {
             log.error("Failed to create vector document for study: {}", event.studyId(), e);
             // 벡터 생성 실패는 스터디 생성에 영향을 주지 않음
             // 추후 재시도 로직 추가 가능
+            slackNotifier.sendWarning("vector 생성실패",
+                    String.format("스터디 ID: %d, 오류: %s", event.studyId(), e.getMessage())
+                    );
 
         }
     }

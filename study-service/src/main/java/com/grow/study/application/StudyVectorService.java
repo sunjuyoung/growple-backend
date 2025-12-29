@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 스터디 벡터 검색 서비스
@@ -42,7 +43,7 @@ public class StudyVectorService {
         // 메타데이터 설정
         // 1.0+ Builder 패턴 사용
         Document document = Document.builder()
-                .id(String.valueOf(studyId))
+                .id(UUID.randomUUID().toString())
                 .text(content)
                 .metadata(buildMetadata(studyId, event))
                 .build();
@@ -171,6 +172,7 @@ public class StudyVectorService {
 
         return content.toString();
     }
+
     private String buildStudyContent(Study event) {
         StringBuilder content = new StringBuilder();
 
@@ -192,7 +194,7 @@ public class StudyVectorService {
      * 메타데이터 생성
      */
     private Map<String, Object> buildMetadata(Long studyId, StudyCreatedEvent event) {
-        // ✅ 모든 값을 String으로 통일 (pgvector 필터링 호환성)
+        // 모든 값을 String으로 통일 (pgvector 필터링 호환성)
         return Map.of(
                 "studyId", String.valueOf(studyId),
                 "title", event.title(),

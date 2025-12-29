@@ -1,10 +1,13 @@
 package com.grow.study.application;
 
 import com.grow.study.adapter.persistence.StudyJpaRepository;
+import com.grow.study.adapter.persistence.StudyMemberJpaRepository;
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
 import com.grow.study.adapter.persistence.dto.StudySearchCondition;
 import com.grow.study.adapter.persistence.dto.StudySearchCondition.StudySortType;
+import com.grow.study.application.dto.MyStudiesResponse;
+import com.grow.study.application.dto.MyStudySummary;
 import com.grow.study.application.dto.StudyDashboardResponse;
 import com.grow.study.application.provided.StudyFinder;
 import com.grow.study.application.required.*;
@@ -23,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +38,7 @@ import java.util.stream.Collectors;
 public class StudyQueryService implements StudyFinder {
 
     private final StudyRepository studyRepository;
+    private final StudyMemberJpaRepository studyMemberJpaRepository;
     private final MemberRestClient memberRestClient;
 
     @Transactional(readOnly = true)
@@ -235,5 +240,61 @@ public class StudyQueryService implements StudyFinder {
             return StudySortType.LATEST;
         }
         return StudySortType.valueOf(sortType);
+    }
+
+    /**
+     * 내 스터디 목록 조회 (참여중, 예정, 완료)
+     * 1번 쿼리로 모두 조회 후 애플리케이션에서 분류
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MyStudiesResponse getMyStudies(Long memberId) {
+        List<Study> allStudies = studyMemberJpaRepository.findAllMyStudies(memberId);
+        LocalDate today = LocalDate.now();
+
+        List<MyStudySummary> participating = new ArrayList<>();
+        List<MyStudySummary> upcoming = new ArrayList<>();
+        List<MyStudySummary> completed = new ArrayList<>();
+
+        for (Study study : allStudies) {
+            MyStudySummary summary = MyStudySummary.from(study);
+            String status = classifyMyStudyStatus(study, today);
+
+            switch (status) {
+                case "PARTICIPATING" -> participating.add(summary);
+                case "UPCOMING" -> upcoming.add(summary);
+                case "COMPLETED" -> completed.add(summary);
+            }
+        }
+
+        return MyStudiesResponse.of(participating, upcoming, completed);
+    }
+
+    /**
+     * 스터디 상태 분류
+     * - PARTICIPATING: 진행 중 (IN_PROGRESS)
+     * - UPCOMING: 예정 (모집 중 or 모집 마감, 아직 시작 전)
+     * - COMPLETED: 완료 (COMPLETED, SETTLED)
+     */
+    private String classifyMyStudyStatus(Study study, LocalDate today) {
+        StudyStatus status = study.getStatus();
+
+        // 진행 중
+        if (status == StudyStatus.IN_PROGRESS) {
+            return "PARTICIPATING";
+        }
+
+        // 완료 상태
+        if (status == StudyStatus.COMPLETED || status == StudyStatus.SETTLED) {
+            return "COMPLETED";
+        }
+
+        // 모집 중 or 모집 마감 -> 예정
+        if (status == StudyStatus.RECRUITING || status == StudyStatus.RECRUIT_CLOSED) {
+            return "UPCOMING";
+        }
+
+        // 기본값 (예외 상황 대비)
+        return "UPCOMING";
     }
 }

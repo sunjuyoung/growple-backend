@@ -5,6 +5,7 @@ import com.grow.common.ChatRoomResponse;
 import com.grow.common.InternalRequest;
 import com.grow.study.application.required.ChatRestClient;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -15,7 +16,7 @@ public class ChatRestClientAdapter implements ChatRestClient {
     private final RestClient restClient;
 
 
-    public ChatRestClientAdapter(RestClient.Builder restClientBuilder) {
+    public ChatRestClientAdapter(@Qualifier("loadBalancedRestClientBuilder") RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.build();
     }
 

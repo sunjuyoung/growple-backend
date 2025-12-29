@@ -2,6 +2,7 @@ package com.grow.study.application.provided;
 
 import com.grow.study.adapter.persistence.dto.CursorResult;
 import com.grow.study.adapter.persistence.dto.StudyListResponse;
+import com.grow.study.application.dto.MyStudiesResponse;
 import com.grow.study.application.dto.StudyDashboardResponse;
 import com.grow.study.application.required.dto.StudySummaryResponse;
 import com.grow.study.application.required.dto.StudyWithMemberCountResponse;
@@ -34,4 +35,9 @@ public interface StudyFinder {
 
 
      StudyDashboardResponse getStudyDashboard(Long studyId, Long memberId);
+
+     /**
+      * 내 스터디 목록 조회 (참여중, 예정, 완료)
+      */
+     MyStudiesResponse getMyStudies(Long memberId);
 }

@@ -56,8 +56,11 @@ dependencies {
     implementation 'com.pgvector:pgvector:0.1.4'
 
     // Spring AI
-    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
     implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+    implementation 'com.google.guava:guava:33.0.0-jre'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

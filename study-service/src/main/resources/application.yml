@@ -21,7 +21,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}/growple_study?currentSchema=public
+    url: ${SPRING_DATASOURCE_URL}/postgres?currentSchema=public
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jackson:
@@ -40,6 +40,7 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
+      base-url: https://api.openai.com
       embedding:
         options:
           model: text-embedding-3-small
@@ -96,4 +97,10 @@ eureka:
 slack:
   webhook:
     enabled: false
-    url: https://hooks.slack.com/services/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
+    url: ${SLACK_WEBHOOK_URL}
+
+ai:
+  answer:
+    schedule-delay: 360000
+    rate-limit-per-minute: 10
+    batch-size: 5
