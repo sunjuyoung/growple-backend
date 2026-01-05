@@ -452,4 +452,15 @@ public class Study extends AbstractEntity {
         return  this.members.stream()
                 .anyMatch(m -> m.getMemberId().equals(memberId) && m.isActive());
     }
+
+    /**
+     * 정산 완료 처리
+     */
+    public void markAsSettled() {
+        if (this.status != StudyStatus.COMPLETED) {
+            throw new IllegalStateException("완료된 스터디만 정산 완료 처리할 수 있습니다.");
+        }
+        this.status = StudyStatus.SETTLED;
+        this.updatedAt = LocalDateTime.now();
+    }
 }

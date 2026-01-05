@@ -23,7 +23,12 @@ public interface AiAnswerQueueRepository extends JpaRepository<AiAnswerQueue, Lo
             """)
     List<AiAnswerQueue> findPendingWithLock(@Param("limit") int limit);
 
-    boolean existsByPostId(Long postId);
+    @Query("""
+            SELECT CASE WHEN COUNT(q) > 0 THEN true ELSE false END
+            FROM AiAnswerQueue q
+            WHERE q.post.id = :postId
+            """)
+    boolean existsByPostId(@Param("postId") Long postId);
 
     Optional<AiAnswerQueue> findByPostId(Long postId);
 

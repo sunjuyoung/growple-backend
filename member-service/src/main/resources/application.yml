@@ -16,7 +16,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}/growple?currentSchema=public
+    url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jackson:
@@ -34,7 +34,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 121.133.244.151
       port: 6379
 
 

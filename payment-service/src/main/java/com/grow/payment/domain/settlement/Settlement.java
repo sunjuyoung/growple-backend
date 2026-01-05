@@ -5,6 +5,7 @@ import com.grow.payment.domain.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -50,12 +51,16 @@ public class Settlement extends AbstractEntity {
     @Version
     private long version;
 
+    @Column
+    private LocalDateTime createdAt;
+
     protected Settlement() {}
 
     public static Settlement create(Long studyId) {
         Settlement s = new Settlement();
         s.studyId = studyId;
         s.status = SettlementStatus.PENDING;
+        s.createdAt = LocalDateTime.now();
         return s;
     }
 
@@ -70,6 +75,12 @@ public class Settlement extends AbstractEntity {
         this.status = SettlementStatus.PROCESSING;
         this.processingStartedAt = now;
         this.lastError = null;
+    }
+
+    public boolean isStale(LocalDateTime now, Duration leaseTimeout) {
+        return status == SettlementStatus.PROCESSING
+                && processingStartedAt != null
+                && processingStartedAt.plus(leaseTimeout).isBefore(now);
     }
 
     /** 아이템 일부 실패가 남으면 헤더도 FAILED로 두고 재시도 스케줄링 */

@@ -39,4 +39,6 @@ public interface StudyRepository {
     List<Study> findByStatusAndStartDate(StudyStatus status, LocalDate startDate);
 
     List<Study> findByStatusAndEndDateBefore(StudyStatus status, LocalDate today);
+
+    List<Study> findByStatus(StudyStatus status);
 }

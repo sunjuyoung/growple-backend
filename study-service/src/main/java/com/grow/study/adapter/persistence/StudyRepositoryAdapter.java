@@ -77,4 +77,9 @@ public class StudyRepositoryAdapter implements StudyRepository {
     public List<Study> findByStatusAndEndDateBefore(StudyStatus status, LocalDate today) {
         return studyJpaRepository.findByStatusAndEndDateBefore(status, today);
     }
+
+    @Override
+    public List<Study> findByStatus(StudyStatus status) {
+        return studyJpaRepository.findByStatus(status);
+    }
 }

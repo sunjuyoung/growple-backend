@@ -35,7 +35,7 @@ public class StudyCompletionScheduler {
     private final SchedulerJobRepository jobRepository;
     private final StudyRepository studyRepository;
 
-    @Scheduled(cron = "0 20 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 */9 * * * *", zone = "Asia/Seoul")
     @Transactional
     public void processStudyCompletion() {
         log.info("스터디 종료 처리 스케줄러 시작");

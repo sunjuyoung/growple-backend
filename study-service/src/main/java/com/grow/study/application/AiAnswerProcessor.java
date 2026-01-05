@@ -1,5 +1,6 @@
 package com.grow.study.application;
 
+import com.grow.study.adapter.persistence.AiAnswerQueueRepository;
 import com.grow.study.adapter.persistence.PostCommentJpaRepository;
 import com.grow.study.domain.board.PostComment;
 import com.grow.study.domain.llm.AiAnswerQueue;
@@ -19,6 +20,7 @@ public class AiAnswerProcessor {
 
     private final ChatClient.Builder chatClient;
     private final PostCommentJpaRepository commentRepository;
+    private final AiAnswerQueueRepository aiAnswerQueueRepository;
 
     @Value("classpath:/study-assistant.st")
     private Resource systemPromptResource;
@@ -38,6 +40,8 @@ public class AiAnswerProcessor {
 
             item.markCompleted();
             log.info("AI answer created for post: {}", item.getPost().getId());
+
+            aiAnswerQueueRepository.save(item);
 
         } catch (Exception e) {
             log.error("Failed to generate AI answer for post: {}", item.getPost().getId(), e);

@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(./gradlew :payment-service:compileJava:*)",
+      "Bash(gradlew.bat :payment-service:compileJava:*)",
+      "Bash(cmd.exe /c:*)",
+      "Bash(cmd /c \"gradlew :payment-service:compileJava --no-daemon 2>&1\")"
     ]
   }
 }

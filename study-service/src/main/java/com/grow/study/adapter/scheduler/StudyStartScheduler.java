@@ -34,7 +34,7 @@ public class StudyStartScheduler {
     private final SchedulerJobRepository jobRepository;
     private final StudyRepository studyRepository;
 
-    @Scheduled(cron = "0 10 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 */8 * * * *", zone = "Asia/Seoul")
     @Transactional
     public void processStudyStart() {
         log.info("스터디 시작 처리 스케줄러 시작");

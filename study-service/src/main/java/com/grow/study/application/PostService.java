@@ -59,6 +59,7 @@ public class PostService {
         }
 
         Post savedPost = postRepository.save(post);
+        log.info("category: {}", savedPost.getCategory());
         // 질문 카테고리일 때만 이벤트 발행
         if (savedPost.getCategory() == PostCategory.QUESTION) {
             eventPublisher.publishEvent(new QuestionPostedEvent(savedPost.getId(), savedPost));

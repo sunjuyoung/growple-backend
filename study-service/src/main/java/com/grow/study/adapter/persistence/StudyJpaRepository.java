@@ -90,4 +90,15 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRep
             @Param("status") StudyStatus status,
             @Param("today") LocalDate today
     );
+
+    /**
+     * 정산 대상 스터디 조회
+     * - 특정 상태의 스터디 + 멤버 정보 함께 조회
+     */
+    @Query("""
+    SELECT DISTINCT s FROM Study s
+    LEFT JOIN FETCH s.members
+    WHERE s.status = :status
+    """)
+    List<Study> findByStatus(@Param("status") StudyStatus status);
 }

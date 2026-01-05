@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: discovery-config
+  labels:
+    app: discovery-service
+data:
+  # Server
+  SERVER_PORT: "8761"
+
+  # Spring Application
+  SPRING_APPLICATION_NAME: "discovery-service"
+
+  # Eureka Server Configuration
+  EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+  EUREKA_CLIENT_FETCH_REGISTRY: "false"
+  EUREKA_SERVER_ENABLE_SELF_PRESERVATION: "false"
+
+  # Logging
+  LOGGING_LEVEL_ROOT: "INFO"
+  LOGGING_LEVEL_COM_NETFLIX_EUREKA: "INFO"
+  LOGGING_LEVEL_COM_NETFLIX_DISCOVERY: "INFO"

@@ -3,12 +3,14 @@ package com.grow.study.adapter.scheduler;
 import com.google.common.util.concurrent.RateLimiter;
 import com.grow.study.adapter.persistence.AiAnswerQueueRepository;
 import com.grow.study.application.AiAnswerProcessor;
+import com.grow.study.application.AiAnswerQueueService;
 import com.grow.study.domain.llm.AiAnswerQueue;
 import com.grow.study.domain.llm.AiConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiAnswerScheduler {
 
-    private final AiAnswerQueueRepository queueRepository;
+    private final AiAnswerQueueService queueService;
     private final AiAnswerProcessor processor;
 
     // 분당 10개 제한
@@ -25,9 +27,9 @@ public class AiAnswerScheduler {
             AiConstants.RATE_LIMIT_PER_MINUTE / 60.0
     );
 
-    @Scheduled(fixedDelayString = "${ai.answer.schedule-delay:60000}")
+    @Scheduled(fixedDelayString = "${ai.answer.schedule-delay:360000}")
     public void processAiAnswerQueue() {
-        List<AiAnswerQueue> pendingItems = queueRepository.findPendingWithLock(AiConstants.BATCH_SIZE);
+        List<AiAnswerQueue> pendingItems = queueService.claimPendingItems(AiConstants.BATCH_SIZE);
 
         if (pendingItems.isEmpty()) {
             return;

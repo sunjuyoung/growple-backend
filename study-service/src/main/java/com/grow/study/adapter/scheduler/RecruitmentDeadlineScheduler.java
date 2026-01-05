@@ -37,7 +37,7 @@ public class RecruitmentDeadlineScheduler {
     private final StudyRepository studyRepository;
     private final SlackNotifier slackNotifier;
 
-    @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 */7 * * * *")
     @Transactional
     public void processRecruitmentDeadline() {
         log.info("모집 마감 처리 스케줄러 시작");

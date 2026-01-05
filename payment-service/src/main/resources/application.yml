@@ -10,6 +10,11 @@ springdoc:
 spring:
   application:
     name: payment-service
+  batch:
+    job:
+      enabled: false # 애플리케이션 시작 시 자동 실행 방지
+    jdbc:
+      initialize-schema: always  # 배치 메타 테이블 자동 생성 (운영에선 never)
 
 
 
@@ -62,6 +67,7 @@ PSP:
     clientKey: ${TOSS_CLIENT_KEY}
     secretKey: ${TOSS_SECRET_KEY}
     url: https://api.tosspayments.com
+    webhookSecretKey: ${TOSS_WEBHOOK_SECRET_KEY:default}
 
 eureka:
   instance:
@@ -76,4 +82,5 @@ eureka:
 logging:
   level:
     root: INFO
-    com.grow.member: DEBUG
+    com.grow.payment: DEBUG
+    org.springframework.batch: INFO
