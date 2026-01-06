@@ -150,7 +150,7 @@ def buildAndDeploy(String serviceName) {
 
     def imageTag = "${ECR_REGISTRY}/growple/${serviceName}:${BUILD_NUMBER}"
 
-    dir("services/${serviceName}") {
+    dir("${serviceName}") {
         // 1. Gradle 빌드
         echo "📦 Gradle 빌드 중..."
         sh './gradlew clean build -x test'
