@@ -1,7 +1,4 @@
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+
 
 springdoc:
   swagger-ui:
@@ -95,6 +92,14 @@ jwt:
     - /api/scheduler/**
     - /api/chat/**
     - /ws-chat/**
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
