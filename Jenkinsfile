@@ -121,7 +121,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildAndDeploy('gateway-service')
+                            buildAndDeploy('apigateway-service')
                         }
                     }
                 }
