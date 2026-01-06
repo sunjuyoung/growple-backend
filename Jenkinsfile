@@ -152,6 +152,8 @@ def buildAndDeploy(String serviceName) {
 
     dir("${serviceName}") {
 
+        sh 'chmod +x gradlew'
+        sh './gradlew clean build -x test'
         // Docker 이미지 빌드
         echo "🐳 Docker 이미지 빌드 중..."
         sh "docker build -t ${imageTag} ."
