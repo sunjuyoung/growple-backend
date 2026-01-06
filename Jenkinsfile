@@ -152,16 +152,11 @@ def buildAndDeploy(String serviceName) {
 
     dir("${serviceName}") {
 
-        sh 'chmod +x gradlew'
-        // 1. Gradle 빌드
-        echo "📦 Gradle 빌드 중..."
-        sh './gradlew clean build -x test'
-
-        // 2. Docker 이미지 빌드
+        // Docker 이미지 빌드
         echo "🐳 Docker 이미지 빌드 중..."
         sh "docker build -t ${imageTag} ."
 
-        // 3. ECR 푸시
+        //  ECR 푸시
         echo "☁️ ECR 푸시 중..."
         sh "docker push ${imageTag}"
     }
