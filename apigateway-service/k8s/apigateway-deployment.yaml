@@ -20,7 +20,7 @@ spec:
         - name : ecr-secret
       containers:
         - name: apigateway-service
-          image: apigateway-service:1.0
+          image: 481207241075.dkr.ecr.ap-northeast-2.amazonaws.com/growple/apigateway-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
