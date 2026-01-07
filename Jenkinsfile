@@ -166,6 +166,16 @@ def buildAndDeploy(String serviceName) {
     // 4. k3s 배포
     echo "🚀 k3s 배포 중..."
     withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
+
+            dir("${serviceName}/k8s") {
+                sh """
+                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-configmap.yaml || true
+                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-secret.yaml || true
+                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-deployment.yaml
+                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-service.yaml
+                """
+            }
+
         sh """
             kubectl --kubeconfig=\$KUBECONFIG \\
                 set image deployment/${serviceName} \\
