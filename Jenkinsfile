@@ -148,15 +148,16 @@ pipeline {
 def buildAndDeploy(String serviceName) {
     echo "====== ${serviceName} 빌드 시작 ======"
 
-    def imageTag = "${ECR_REGISTRY}/growple/${serviceName}:${BUILD_NUMBER}"
+      def imageTag = "${ECR_REGISTRY}/growple/${serviceName}:${BUILD_NUMBER}"
+      def latestTag = "${ECR_REGISTRY}/growple/${serviceName}:latest"
 
     dir("${serviceName}") {
 
         sh 'chmod +x gradlew'
-    sh './gradlew clean build -x test --no-daemon'
+        sh './gradlew clean build -x test --no-daemon'
         // Docker 이미지 빌드
         echo "🐳 Docker 이미지 빌드 중..."
-        sh "docker build -t ${imageTag} ."
+        sh "docker build -t ${imageTag} -t ${latestTag} ."
 
         //  ECR 푸시
         echo "☁️ ECR 푸시 중..."
