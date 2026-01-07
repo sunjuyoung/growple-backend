@@ -132,10 +132,10 @@ pipeline {
     // ========== 빌드 후 처리 ==========
     post {
         success {
-            echo '✅ 배포 성공!'
+            echo '배포 성공!'
         }
         failure {
-            echo '❌ 배포 실패!'
+            echo '배포 실패!'
         }
         always {
             // Docker 이미지 정리 (디스크 절약)
@@ -156,16 +156,16 @@ def buildAndDeploy(String serviceName) {
         sh 'chmod +x gradlew'
         sh './gradlew clean build -x test --no-daemon'
         // Docker 이미지 빌드
-        echo "🐳 Docker 이미지 빌드 중..."
+        echo "Docker 이미지 빌드 중..."
         sh "docker build -t ${imageTag} -t ${latestTag} ."
 
         //  ECR 푸시
-        echo "☁️ ECR 푸시 중..."
+        echo " ECR 푸시 중..."
         sh "docker push ${imageTag}"
     }
 
     // 4. k3s 배포
-    echo "🚀 k3s 배포 중..."
+    echo "k3s 배포 중..."
     withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
 
             dir("${serviceName}/k8s") {
@@ -188,5 +188,5 @@ def buildAndDeploy(String serviceName) {
         """
     }
 
-    echo "✅ ${serviceName} 배포 완료!"
+    echo " ${serviceName} 배포 완료!"
 }
