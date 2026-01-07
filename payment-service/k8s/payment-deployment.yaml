@@ -17,9 +17,11 @@ spec:
         app: payment-service
         version: v1
     spec:
+      imagePullSecrets:
+        - name: ecr-secret
       containers:
         - name: payment-service
-          image: payment-service:1.0
+          image: 481207241075.dkr.ecr.ap-northeast-2.amazonaws.com/growple/payment-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8083
@@ -29,32 +31,5 @@ spec:
                 name: payment-config
             - secretRef:
                 name: payment-secret
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: "prod"
-            - name: JAVA_OPTS
-              value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
-#          resources:
-#            requests:
-#              memory: "512Mi"
-#              cpu: "250m"
-#            limits:
-#              memory: "1Gi"
-#              cpu: "500m"
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8083
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8083
-            initialDelaySeconds: 60
-            periodSeconds: 15
-            timeoutSeconds: 5
-            failureThreshold: 3
+
 
