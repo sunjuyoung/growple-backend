@@ -168,12 +168,12 @@ def buildAndDeploy(String serviceName) {
     withCredentials([file(credentialsId: 'k3s-kubeconfig', variable: 'KUBECONFIG')]) {
 
             dir("${serviceName}/k8s") {
-                sh """
-                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-configmap.yaml || true
-                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-secret.yaml || true
-                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-deployment.yaml
-                    kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName}-service.yaml
-                """
+         sh """
+             kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName.replace('-service', '')}-configmap.yaml || true
+             kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName.replace('-service', '')}-secret.yaml || true
+             kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName.replace('-service', '')}-deployment.yaml
+             kubectl --kubeconfig=\$KUBECONFIG apply -f ${serviceName.replace('-service', '')}-service.yaml
+         """
             }
 
         sh """
