@@ -253,11 +253,7 @@ PostgreSQL에 pgvector 확장 설치:
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-### 3. 애플리케이션 시작
-```bash
-cd study-service
-./gradlew bootRun
-```
+
 
 Spring AI가 자동으로 `vector_store` 테이블과 인덱스를 생성합니다.
 

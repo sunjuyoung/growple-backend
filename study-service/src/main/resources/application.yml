@@ -21,7 +21,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}/postgres?currentSchema=public
+    url: ${SPRING_DATASOURCE_URL2}/postgres?currentSchema=public
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jackson:

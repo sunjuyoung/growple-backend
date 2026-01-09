@@ -257,13 +257,12 @@ public class StudyQueryService implements StudyFinder {
         List<MyStudySummary> completed = new ArrayList<>();
 
         for (Study study : allStudies) {
-            MyStudySummary summary = MyStudySummary.from(study);
             String status = classifyMyStudyStatus(study, today);
 
             switch (status) {
-                case "PARTICIPATING" -> participating.add(summary);
-                case "UPCOMING" -> upcoming.add(summary);
-                case "COMPLETED" -> completed.add(summary);
+                case "PARTICIPATING" -> participating.add(MyStudySummary.fromWithWeekInfo(study));
+                case "UPCOMING" -> upcoming.add(MyStudySummary.from(study));
+                case "COMPLETED" -> completed.add(MyStudySummary.from(study));
             }
         }
 
