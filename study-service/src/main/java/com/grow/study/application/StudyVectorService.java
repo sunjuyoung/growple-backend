@@ -1,5 +1,6 @@
 package com.grow.study.application;
 
+import com.grow.study.adapter.config.RedisConfig;
 import com.grow.study.application.required.StudyRepository;
 import com.grow.study.domain.event.StudyCreatedEvent;
 import com.grow.study.domain.study.Study;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +60,9 @@ public class StudyVectorService {
      * @param studyId 기준 스터디 ID
      * @param topK 반환할 유사 스터디 개수 (기본값은 4)
      * @return 유사 스터디 ID 리스트
+     * todo
      */
+    @Cacheable(value = RedisConfig.SIMILAR_STUDIES_CACHE, key = "#studyId + ':' + #topK")
     public List<Long> findSimilarStudies(Long studyId, int topK) {
         log.info("Finding similar studies for study: {}, topK: {}", studyId, topK);
 
@@ -73,7 +77,7 @@ public class StudyVectorService {
         SearchRequest similarityRequest = SearchRequest
                 .builder()
                 .query(searchQuery) //유사도 검색에 사용될 텍스트
-                .topK(topK + 1) // 자기 자신 제외를 위해 +1
+                .topK(topK)
                 .similarityThreshold(0.7) // 유사도 70% 이상
                 .filterExpression("studyId != '" + studyId + "' && status == 'RECRUITING'")
                 .build();
@@ -81,22 +85,25 @@ public class StudyVectorService {
 
         List<Document> similarDocuments = vectorStore.similaritySearch(similarityRequest);
 
-        // 3. 자기 자신 제외 및 Study ID 추출
+        // 3. 자기 자신 제외 및 Study ID 추출 (메타데이터에서 studyId 조회)
         return similarDocuments.stream()
-                .map(doc -> Long.parseLong(doc.getId()))
-                .filter(id -> !id.equals(studyId))
-                .limit(topK)
+                .map(doc -> Long.parseLong((String) doc.getMetadata().get("studyId")))
+               // .filter(id -> !id.equals(studyId))
+              //  .limit(topK)
                 .toList();
     }
 
     /**
      * 멤버의 관심사 기반 스터디 추천
+     * @param userId 유저 ID (캐시 키로 사용)
      * @param memberIntroduction 멤버 소개 (관심사)
      * @param topK 추천할 스터디 개수
      * @return 추천 스터디 ID 리스트
+     * todo 유저 자기소개 수정 시 캐시 무효화 로직 필요
      */
-    public List<Long> recommendStudiesByMemberInterest(String memberIntroduction, int topK) {
-        log.info("Recommending studies based on member interest, topK: {}", topK);
+
+    @Cacheable(value = RedisConfig.MEMBER_INTEREST_CACHE, key = "#userId + ':' + #topK")
+    public List<Long> recommendStudiesByMemberInterest(Long userId, String memberIntroduction, int topK) {
 
         // 멤버 관심사로 유사 스터디 검색 (모집 중인 스터디만)
         SearchRequest searchRequest = SearchRequest
@@ -110,7 +117,7 @@ public class StudyVectorService {
         List<Document> documents = vectorStore.similaritySearch(searchRequest);
 
         return documents.stream()
-                .map(doc -> Long.parseLong(doc.getId()))
+                .map(doc -> Long.parseLong((String) doc.getMetadata().get("studyId")))
                 .toList();
     }
 
@@ -134,7 +141,7 @@ public class StudyVectorService {
         List<Document> documents = vectorStore.similaritySearch(searchRequest);
 
         return documents.stream()
-                .map(doc -> Long.parseLong(doc.getId()))
+                .map(doc -> Long.parseLong((String) doc.getMetadata().get("studyId")))
                 .toList();
     }
 

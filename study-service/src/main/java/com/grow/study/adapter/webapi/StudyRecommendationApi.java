@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/studies")
+@RequestMapping("/api/studies")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Study Recommendation", description = "스터디 추천 API")
@@ -45,7 +45,6 @@ public class StudyRecommendationApi {
             @PathVariable @Parameter(description = "스터디 ID") Long studyId,
             @RequestParam(defaultValue = "3") @Positive @Parameter(description = "추천 개수") int limit
     ) {
-        log.info("GET /api/v1/studies/{}/recommendations/similar?limit={}", studyId, limit);
 
         List<Study> similarStudies = studyRecommendationService.recommendSimilarStudies(studyId, limit);
 
@@ -65,11 +64,12 @@ public class StudyRecommendationApi {
             description = "멤버의 관심사(소개)를 기반으로 적합한 스터디를 추천합니다. 모집 중인 스터디만 반환됩니다."
     )
     public ResponseEntity<List<StudyRecommendationResponse>> getStudiesByMemberInterest(
+            @RequestHeader("X-User-Id") @Parameter(description = "유저 ID") Long userId,
             @Valid @RequestBody MemberInterestRequest request
     ) {
-        log.info("POST /api/v1/studies/recommendations/by-interest, limit={}", request.getLimit());
 
         List<Study> recommendedStudies = studyRecommendationService.recommendStudiesByMemberInterest(
+                userId,
                 request.getMemberIntroduction(),
                 request.getLimit()
         );
@@ -82,11 +82,11 @@ public class StudyRecommendationApi {
     }
 
     /**
-     * 카테고리별 유사 스터디 추천
+     * 검색, 카테고리별 유사 스터디 추천
      */
     @GetMapping("/recommendations/by-category")
     @Operation(
-            summary = "카테고리별 유사 스터디 추천",
+            summary = "검색, 카테고리별 유사 스터디 추천",
             description = "특정 카테고리 내에서 검색 텍스트와 유사한 스터디를 추천합니다. 모집 중인 스터디만 반환됩니다."
     )
     public ResponseEntity<List<StudyRecommendationResponse>> getStudiesByCategory(
@@ -94,8 +94,6 @@ public class StudyRecommendationApi {
             @RequestParam @Parameter(description = "카테고리") String category,
             @RequestParam(defaultValue = "10") @Positive @Parameter(description = "추천 개수") int limit
     ) {
-        log.info("GET /api/v1/studies/recommendations/by-category?query={}&category={}&limit={}",
-                query, category, limit);
 
         List<Study> recommendedStudies = studyRecommendationService.recommendStudiesByCategory(
                 query,

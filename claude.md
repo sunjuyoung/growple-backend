@@ -20,10 +20,9 @@ growple/
 ├── apigateway-service/    # API Gateway (JWT 인증, 라우팅) 
 ├── discovery-service/     # Eureka Server (서비스 디스커버리)
 ├── member-service/        # 회원 관리 서비스
-├── study-service/         # 스터디 관리 서비스
+├── study-service/         # 스터디 관리 서비스, 게시판, LLM(OpenAI) 기반 추천, 벡터 검색
 ├── payment-service/       # 결제 서비스 (Toss Payments)
-├── chat-service/          # 채팅 서비스
-└── build.gradle           # 루트 빌드 설정
+├── chat-service/          # 채팅 서비스(WebSocket STOMP, Redis Pub/Sub)
 ```
 
 ## Architecture

@@ -49,15 +49,16 @@ public class StudyRecommendationService {
 
     /**
      * 멤버 관심사 기반 스터디 추천
+     * @param userId 유저 ID (캐시 키로 사용)
      * @param memberIntroduction 멤버 소개 (관심사)
      * @param limit 추천할 스터디 개수
      * @return 추천 스터디 리스트
      */
-    public List<Study> recommendStudiesByMemberInterest(String memberIntroduction, int limit) {
-        log.info("Recommending studies based on member interest, limit: {}", limit);
+    public List<Study> recommendStudiesByMemberInterest(Long userId, String memberIntroduction, int limit) {
 
         // 1. 벡터 검색으로 추천 스터디 ID 조회
         List<Long> recommendedStudyIds = studyVectorService.recommendStudiesByMemberInterest(
+                userId,
                 memberIntroduction,
                 limit
         );
