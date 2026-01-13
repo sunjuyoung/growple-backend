@@ -272,10 +272,3 @@ com.grow.study
         └── SchedulerJobRepositoryAdapter.java  # Repository 구현체
 ```
 
-## TODO
-
-- [ ] `StudyStartScheduler` 구현 (STUDY_START Job 처리)
-- [ ] `StudyCompletionScheduler` 구현 (STUDY_COMPLETION Job 처리)
-- [ ] 모집 취소 시 참가자 결제 전액 포인트 환급 처리
-- [ ] Job 처리 실패 알림 발송 (Slack, Email 등)
-- [ ] 재시도 횟수 초과 Job 모니터링 대시보드

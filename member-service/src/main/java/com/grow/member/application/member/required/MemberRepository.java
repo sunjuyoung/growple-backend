@@ -3,6 +3,7 @@ package com.grow.member.application.member.required;
 import com.grow.member.domain.Email;
 import com.grow.member.domain.member.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,6 +18,8 @@ public interface MemberRepository {
     boolean existsByNickname(String nickname);
 
     Optional<Member> findById(Long memberId);
+
+    List<Member> findByIds(List<Long> memberIds);
 
     Member save(Member member);
 }

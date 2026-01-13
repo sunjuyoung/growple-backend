@@ -51,6 +51,7 @@ public class ChatMessageService {
         ChatMessage message = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .sender(request.getSenderId())
+                .senderNickname(request.getSenderNickname())
                 .content(request.getContent())
                 .messageType(request.getMessageType())
                 .createdAt(LocalDateTime.now())
@@ -63,7 +64,7 @@ public class ChatMessageService {
         // Redis 캐시 무효화 (읽지 않은 메시지 카운트)
         invalidateUnreadCountCache(request.getChatRoomId());
 
-        return ChatMessageResponse.from(savedMessage);
+        return ChatMessageResponse.from(savedMessage, request.getSenderNickname());
     }
 
     @Transactional

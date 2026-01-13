@@ -5,10 +5,11 @@ public record StudyCreateEvent(
         Long userId,
         Long studyId,
         String orderName,
-        Integer amount
+        Integer amount,
+        String nickname
 
 ) {
-    public static StudyCreateEvent of(Long userId, Long studyId, String orderName, Integer amount) {
-        return new StudyCreateEvent(userId, studyId, orderName, amount);
+    public static StudyCreateEvent of(Long userId, Long studyId, String orderName, Integer amount, String nickname) {
+        return new StudyCreateEvent(userId, studyId, orderName, amount, nickname);
     }
 }

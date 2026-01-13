@@ -9,6 +9,8 @@ import com.grow.study.adapter.persistence.dto.StudySearchCondition.StudySortType
 import com.grow.study.application.dto.MyStudiesResponse;
 import com.grow.study.application.dto.MyStudySummary;
 import com.grow.study.application.dto.StudyDashboardResponse;
+import com.grow.study.application.dto.StudyMemberDetailResponse;
+import com.grow.study.application.dto.StudyMemberListResponse;
 import com.grow.study.application.provided.StudyFinder;
 import com.grow.study.application.required.*;
 import com.grow.study.application.required.dto.MemberSummaryResponse;
@@ -26,10 +28,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -295,5 +295,49 @@ public class StudyQueryService implements StudyFinder {
 
         // 기본값 (예외 상황 대비)
         return "UPCOMING";
+    }
+
+    /**
+     * 스터디 멤버 리스트 조회
+     * N+1 문제 방지를 위해 벌크 조회 사용
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StudyMemberListResponse getStudyMembers(Long studyId) {
+        // 1. 스터디 정보 조회
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
+
+        // 2. 스터디의 활성 멤버 조회
+        List<StudyMember> studyMembers = studyMemberJpaRepository.findByStudyId(studyId);
+
+        if (studyMembers.isEmpty()) {
+            return StudyMemberListResponse.of(studyId, study.getTitle(), List.of());
+        }
+
+        // 3. memberId 리스트 추출
+        List<Long> memberIds = studyMembers.stream()
+                .map(StudyMember::getMemberId)
+                .toList();
+
+        // 4. member-service 벌크 조회 (N+1 방지)
+        List<MemberSummaryResponse> memberInfos = memberRestClient.getMemberSummaries(memberIds);
+
+        // 5. memberId -> MemberSummaryResponse 매핑
+        Map<Long, MemberSummaryResponse> memberInfoMap = memberInfos.stream()
+                .collect(Collectors.toMap(
+                        MemberSummaryResponse::id,
+                        Function.identity()
+                ));
+
+        // 6. 응답 DTO 조합 (리더 먼저, 가입일 순)
+        List<StudyMemberDetailResponse> memberResponses = studyMembers.stream()
+                .sorted(Comparator
+                        .comparing(StudyMember::isLeader).reversed()
+                        .thenComparing(StudyMember::getJoinedAt))
+                .map(sm -> StudyMemberDetailResponse.of(sm, memberInfoMap.get(sm.getMemberId())))
+                .toList();
+
+        return StudyMemberListResponse.of(studyId, study.getTitle(), memberResponses);
     }
 }

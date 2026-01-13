@@ -75,8 +75,8 @@ public class ChatWebSocketController {
     public void joinChatRoom(@Payload ChatMessageRequest request,
                              SimpMessageHeaderAccessor headerAccessor) {
         String sessionId = headerAccessor.getSessionId();
-        log.info("채팅방 입장: chatRoomId={}, memberId={}, sessionId={}",
-                request.getChatRoomId(), request.getSenderId(), sessionId);
+        log.info("채팅방 입장: chatRoomId={}, memberId={}, sessionId={} senderNickname={}",
+                request.getChatRoomId(), request.getSenderId(), sessionId , request.getSenderNickname());
 
         try {
             // 접속자 목록에 추가

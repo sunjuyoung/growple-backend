@@ -21,9 +21,9 @@ public class ChatRestClientAdapter implements ChatRestClient {
     }
 
     @Override
-    public ChatRoomResponse createChatRoom(Long studyId, String roomName, Long userId) {
+    public ChatRoomResponse createChatRoom(Long studyId, String roomName, Long userId,String nickname) {
 
-        InternalRequest request = new InternalRequest(studyId, roomName, userId);
+        InternalRequest request = new InternalRequest(studyId, roomName, userId, nickname);
         return restClient.post()
                 .uri("http://chat-service/api/chat/internal/rooms/member")
                 .body(request)

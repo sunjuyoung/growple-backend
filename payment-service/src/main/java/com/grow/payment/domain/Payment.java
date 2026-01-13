@@ -62,6 +62,10 @@ public class Payment extends AbstractEntity {
     @Column(name = "fail_reason")
     private String failReason;
 
+    // === 낙관적 락 (동시성 제어) ===
+    @Version
+    private Long version;
+
     // === 생성 메서드 ===
     @Builder
     private Payment(Long memberId, Long studyId, String orderName, Integer amount, String orderId) {

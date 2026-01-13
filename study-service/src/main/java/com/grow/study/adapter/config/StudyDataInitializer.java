@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-//@Profile("dev")
+@Profile("dev")
 @RequiredArgsConstructor
 public class StudyDataInitializer implements ApplicationRunner {
 
@@ -32,7 +32,7 @@ public class StudyDataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (studyRepository.count() > 2) {
+        if (studyRepository.count() > 0) {
             log.info("스터디 데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
             return;
         }
@@ -109,10 +109,10 @@ public class StudyDataInitializer implements ApplicationRunner {
                         1L, "스터디장1", 8
                 ),
                 new StudyData(
-                        "React + TypeScript 프론트엔드",
+                        "React + SpringBoot",
                         StudyCategory.DEVELOPMENT,
                         StudyLevel.BASIC,
-                        "React와 TypeScript를 활용한 모던 프론트엔드 개발을 배웁니다.",
+                        "React와 SpringBoot 활용한 모던  개발을 배웁니다.",
                         "1주차: React 기초\n2주차: TypeScript 적용\n3주차: 상태관리\n4주차: 프로젝트",
                         "프론트엔드 개발자를 꿈꾸는 분들 환영합니다!",
                         15000, 2, 6,
@@ -122,10 +122,10 @@ public class StudyDataInitializer implements ApplicationRunner {
                         2L, "스터디장2", 6
                 ),
                 new StudyData(
-                        "Python 알고리즘 스터디",
+                        "Nextjs SringBoot 풀스택 개발",
                         StudyCategory.DEVELOPMENT,
                         StudyLevel.BEGINNER,
-                        "코딩테스트 대비 알고리즘 문제풀이 스터디입니다. 매주 10문제씩 풀어봅니다.",
+                        "Nextjs SringBoot 풀스택 개발.",
                         "매주 백준/프로그래머스 문제 풀이 및 코드 리뷰",
                         "알고리즘 기초부터 차근차근 함께해요!",
                         10000, 4, 10,
@@ -163,7 +163,7 @@ public class StudyDataInitializer implements ApplicationRunner {
 
                 // ===== 외국어 카테고리 =====
                 new StudyData(
-                        "영어 회화 스터디 - 중급",
+                        "토익스피킹 회화 스터디 ",
                         StudyCategory.LANGUAGE,
                         StudyLevel.INTERMEDIATE,
                         "원어민 수준의 영어 회화를 목표로 프리토킹 위주로 진행합니다.",
@@ -176,7 +176,7 @@ public class StudyDataInitializer implements ApplicationRunner {
                         3L, "스터디장6", 12
                 ),
                 new StudyData(
-                        "일본어 JLPT N2 대비반",
+                        "일본어 자격증 대비",
                         StudyCategory.LANGUAGE,
                         StudyLevel.INTERMEDIATE,
                         "JLPT N2 시험 대비 문법, 어휘, 독해를 집중적으로 공부합니다.",
@@ -189,10 +189,10 @@ public class StudyDataInitializer implements ApplicationRunner {
                         1L, "스터디장7", 16
                 ),
                 new StudyData(
-                        "중국어 HSK 4급 스터디",
+                        "토스 스터디",
                         StudyCategory.LANGUAGE,
                         StudyLevel.BASIC,
-                        "HSK 4급 취득을 목표로 체계적으로 공부합니다.",
+                        "영어 회화를 목표로 프리토킹 위주로 진행 목표로 체계적으로 공부합니다.",
                         "어휘 → 문법 → 듣기 → 독해 순서로 진행",
                         "중국어 기초가 있는 분들과 함께하고 싶어요!",
                         20000, 3, 8,
@@ -200,104 +200,104 @@ public class StudyDataInitializer implements ApplicationRunner {
                         Set.of(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
                         LocalTime.of(19, 0), LocalTime.of(21, 0),
                         2L, "스터디장8", 12
-                ),
+                )
 
                 // ===== 자격증 카테고리 =====
-                new StudyData(
-                        "정보처리기사 실기 대비",
-                        StudyCategory.CERTIFICATE,
-                        StudyLevel.INTERMEDIATE,
-                        "정보처리기사 실기 시험 대비 스터디입니다. 기출문제 위주로 학습합니다.",
-                        "매주 기출문제 풀이 및 오답 정리, 모의고사 진행",
-                        "올해 안에 꼭 합격합시다!",
-                        30000, 3, 10,
-                        today.plusDays(5), today.plusDays(40), today.plusDays(3),
-                        Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
-                        LocalTime.of(20, 0), LocalTime.of(22, 0),
-                        3L, "스터디장9", 15
-                ),
-                new StudyData(
-                        "SQLD 자격증 스터디",
-                        StudyCategory.CERTIFICATE,
-                        StudyLevel.BASIC,
-                        "SQL 개발자 자격증 취득을 위한 스터디입니다.",
-                        "이론 학습 → 문제 풀이 → 오답 분석",
-                        "DB 기초부터 시작하는 분들도 환영해요!",
-                        15000, 2, 6,
-                        today.plusDays(8), today.plusDays(36), today.plusDays(6),
-                        Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
-                        LocalTime.of(21, 0), LocalTime.of(22, 30),
-                        1L, "스터디장10", 8
-                ),
-                new StudyData(
-                        "AWS SAA 자격증 스터디",
-                        StudyCategory.CERTIFICATE,
-                        StudyLevel.INTERMEDIATE,
-                        "AWS Solutions Architect Associate 자격증 취득 스터디입니다.",
-                        "AWS 공식 문서 학습 + Udemy 강의 + 덤프 풀이",
-                        "클라우드 전문가가 되어봅시다!",
-                        35000, 2, 5,
-                        today.plusDays(14), today.plusDays(56), today.plusDays(12),
-                        Set.of(DayOfWeek.SATURDAY),
-                        LocalTime.of(10, 0), LocalTime.of(13, 0),
-                        1L, "스터디장1", 6
-                ),
+//                new StudyData(
+//                        "정보처리기사 실기 대비",
+//                        StudyCategory.CERTIFICATE,
+//                        StudyLevel.INTERMEDIATE,
+//                        "정보처리기사 실기 시험 대비 스터디입니다. 기출문제 위주로 학습합니다.",
+//                        "매주 기출문제 풀이 및 오답 정리, 모의고사 진행",
+//                        "올해 안에 꼭 합격합시다!",
+//                        30000, 3, 10,
+//                        today.plusDays(5), today.plusDays(40), today.plusDays(3),
+//                        Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
+//                        LocalTime.of(20, 0), LocalTime.of(22, 0),
+//                        3L, "스터디장9", 15
+//                ),
+//                new StudyData(
+//                        "SQLD 자격증 스터디",
+//                        StudyCategory.CERTIFICATE,
+//                        StudyLevel.BASIC,
+//                        "SQL 개발자 자격증 취득을 위한 스터디입니다.",
+//                        "이론 학습 → 문제 풀이 → 오답 분석",
+//                        "DB 기초부터 시작하는 분들도 환영해요!",
+//                        15000, 2, 6,
+//                        today.plusDays(8), today.plusDays(36), today.plusDays(6),
+//                        Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
+//                        LocalTime.of(21, 0), LocalTime.of(22, 30),
+//                        1L, "스터디장10", 8
+//                ),
+//                new StudyData(
+//                        "AWS SAA 자격증 스터디",
+//                        StudyCategory.CERTIFICATE,
+//                        StudyLevel.INTERMEDIATE,
+//                        "AWS Solutions Architect Associate 자격증 취득 스터디입니다.",
+//                        "AWS 공식 문서 학습 + Udemy 강의 + 덤프 풀이",
+//                        "클라우드 전문가가 되어봅시다!",
+//                        35000, 2, 5,
+//                        today.plusDays(14), today.plusDays(56), today.plusDays(12),
+//                        Set.of(DayOfWeek.SATURDAY),
+//                        LocalTime.of(10, 0), LocalTime.of(13, 0),
+//                        1L, "스터디장1", 6
+//                ),
 
                 // ===== 취미 카테고리 =====
-                new StudyData(
-                        "독서 토론 모임",
-                        StudyCategory.HOBBY,
-                        StudyLevel.BEGINNER,
-                        "매주 한 권의 책을 읽고 토론하는 독서 모임입니다.",
-                        "자기계발, 에세이, 소설 등 다양한 장르의 책을 함께 읽습니다.",
-                        "책을 좋아하는 분들과 생각을 나누고 싶어요!",
-                        10000, 3, 8,
-                        today.plusDays(6), today.plusDays(48), today.plusDays(4),
-                        Set.of(DayOfWeek.SUNDAY),
-                        LocalTime.of(14, 0), LocalTime.of(16, 0),
-                        2L, "스터디장2", 6
-                ),
-                new StudyData(
-                        "사이드 프로젝트 팀빌딩",
-                        StudyCategory.HOBBY,
-                        StudyLevel.INTERMEDIATE,
-                        "함께 사이드 프로젝트를 기획하고 개발하는 스터디입니다.",
-                        "아이디어 회의 → 기획 → 개발 → 배포까지",
-                        "포트폴리오용 프로젝트를 만들고 싶은 분들 모여주세요!",
-                        5000, 4, 8,
-                        today.plusDays(10), today.plusDays(80), today.plusDays(8),
-                        Set.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY),
-                        LocalTime.of(13, 0), LocalTime.of(17, 0),
-                        3L, "스터디장3", 20
-                ),
-
-                // ===== 기타 카테고리 =====
-                new StudyData(
-                        "취업 면접 스터디",
-                        StudyCategory.ETC,
-                        StudyLevel.BEGINNER,
-                        "IT 기업 취업을 위한 면접 준비 스터디입니다.",
-                        "자기소개 → 기술 면접 → 인성 면접 모의 면접 진행",
-                        "함께 취뽀해요!",
-                        15000, 3, 6,
-                        today.plusDays(4), today.plusDays(32), today.plusDays(2),
-                        Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
-                        LocalTime.of(20, 0), LocalTime.of(22, 0),
-                        1L, "스터디장4", 8
-                ),
-                new StudyData(
-                        "CS 기초 지식 스터디",
-                        StudyCategory.ETC,
-                        StudyLevel.BASIC,
-                        "운영체제, 네트워크, 데이터베이스 등 CS 기초를 학습합니다.",
-                        "주제별 발표 및 질의응답, 면접 예상 질문 정리",
-                        "탄탄한 CS 지식을 쌓아봅시다!",
-                        20000, 2, 8,
-                        today.plusDays(9), today.plusDays(51), today.plusDays(7),
-                        Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
-                        LocalTime.of(21, 0), LocalTime.of(23, 0),
-                        2L, "스터디장5", 18
-                )
+//                new StudyData(
+//                        "독서 토론 모임",
+//                        StudyCategory.HOBBY,
+//                        StudyLevel.BEGINNER,
+//                        "매주 한 권의 책을 읽고 토론하는 독서 모임입니다.",
+//                        "자기계발, 에세이, 소설 등 다양한 장르의 책을 함께 읽습니다.",
+//                        "책을 좋아하는 분들과 생각을 나누고 싶어요!",
+//                        10000, 3, 8,
+//                        today.plusDays(6), today.plusDays(48), today.plusDays(4),
+//                        Set.of(DayOfWeek.SUNDAY),
+//                        LocalTime.of(14, 0), LocalTime.of(16, 0),
+//                        2L, "스터디장2", 6
+//                ),
+//                new StudyData(
+//                        "사이드 프로젝트 팀빌딩",
+//                        StudyCategory.HOBBY,
+//                        StudyLevel.INTERMEDIATE,
+//                        "함께 사이드 프로젝트를 기획하고 개발하는 스터디입니다.",
+//                        "아이디어 회의 → 기획 → 개발 → 배포까지",
+//                        "포트폴리오용 프로젝트를 만들고 싶은 분들 모여주세요!",
+//                        5000, 4, 8,
+//                        today.plusDays(10), today.plusDays(80), today.plusDays(8),
+//                        Set.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY),
+//                        LocalTime.of(13, 0), LocalTime.of(17, 0),
+//                        3L, "스터디장3", 20
+//                ),
+//
+//                // ===== 기타 카테고리 =====
+//                new StudyData(
+//                        "취업 면접 스터디",
+//                        StudyCategory.ETC,
+//                        StudyLevel.BEGINNER,
+//                        "IT 기업 취업을 위한 면접 준비 스터디입니다.",
+//                        "자기소개 → 기술 면접 → 인성 면접 모의 면접 진행",
+//                        "함께 취뽀해요!",
+//                        15000, 3, 6,
+//                        today.plusDays(4), today.plusDays(32), today.plusDays(2),
+//                        Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+//                        LocalTime.of(20, 0), LocalTime.of(22, 0),
+//                        1L, "스터디장4", 8
+//                ),
+//                new StudyData(
+//                        "CS 기초 지식 스터디",
+//                        StudyCategory.ETC,
+//                        StudyLevel.BASIC,
+//                        "운영체제, 네트워크, 데이터베이스 등 CS 기초를 학습합니다.",
+//                        "주제별 발표 및 질의응답, 면접 예상 질문 정리",
+//                        "탄탄한 CS 지식을 쌓아봅시다!",
+//                        20000, 2, 8,
+//                        today.plusDays(9), today.plusDays(51), today.plusDays(7),
+//                        Set.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
+//                        LocalTime.of(21, 0), LocalTime.of(23, 0),
+//                        2L, "스터디장5", 18
+//                )
         );
     }
 

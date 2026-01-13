@@ -1,5 +1,6 @@
 package com.grow.study.domain.study;
 
+import com.grow.study.application.NonRetryableException;
 import com.grow.study.domain.AbstractEntity;
 import com.grow.study.domain.event.StudyStatusChangedEvent;
 import jakarta.persistence.*;
@@ -439,7 +440,7 @@ public class Study extends AbstractEntity {
         boolean alreadyMember = isMember(memberId);
 
         if (alreadyMember) {
-            throw new IllegalStateException("이미 참가한 멤버입니다.");
+            throw new NonRetryableException("이미 참가한 멤버입니다.");
         }
 
         StudyMember member = StudyMember.createMember(this, memberId, depositAmount,nickname);

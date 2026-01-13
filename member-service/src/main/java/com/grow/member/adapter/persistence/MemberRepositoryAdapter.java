@@ -6,6 +6,7 @@ import com.grow.member.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,6 +33,14 @@ public class MemberRepositoryAdapter implements MemberRepository{
     @Override
     public Optional<Member> findById(Long memberId) {
         return memberJpaRepository.findById(memberId);
+    }
+
+    @Override
+    public List<Member> findByIds(List<Long> memberIds) {
+        if (memberIds == null || memberIds.isEmpty()) {
+            return List.of();
+        }
+        return memberJpaRepository.findAllById(memberIds);
     }
 
     @Override

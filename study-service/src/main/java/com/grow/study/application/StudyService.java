@@ -99,7 +99,7 @@ public class StudyService implements StudyRegister {
             Study savedStudy = studyRepository.save(study);
 
             // 채팅방 생성
-            chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle(),leaderId);
+            chatRestClient.createChatRoom(savedStudy.getId(), savedStudy.getTitle(),leaderId, memberSummary.nickname());
 
             // pgvector Document 생성을 위한 이벤트 발행 (저장 후 ID 포함)
             eventPublisher.publishEvent(new StudyCreatedEvent(
@@ -152,7 +152,7 @@ public class StudyService implements StudyRegister {
 
         studyEventPublisher.publishStudyMember(
                 StudyCreateEvent.of(
-                        memberId,studyId,"studyMemberCreate",null
+                        memberId,studyId,"studyMemberCreate",null,memberSummary.nickname()
                 )
         );
 

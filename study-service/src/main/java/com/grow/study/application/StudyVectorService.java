@@ -78,7 +78,7 @@ public class StudyVectorService {
                 .builder()
                 .query(searchQuery) //유사도 검색에 사용될 텍스트
                 .topK(topK)
-                .similarityThreshold(0.7) // 유사도 70% 이상
+                .similarityThreshold(0.6) // 유사도
                 .filterExpression("studyId != '" + studyId + "' && status == 'RECRUITING'")
                 .build();
 
@@ -110,7 +110,7 @@ public class StudyVectorService {
                 .builder()
                 .query(memberIntroduction)
                 .topK(topK)
-                .similarityThreshold(0.6) // 유사도 60% 이상
+                .similarityThreshold(0.5) // 유사도
                 .filterExpression("status == 'RECRUITING'")
                 .build();
 
@@ -170,12 +170,9 @@ public class StudyVectorService {
             content.append("커리큘럼: ").append(event.curriculum()).append("\n");
         }
 
-        if (event.leaderMessage() != null) {
-            content.append("스터디장 메시지: ").append(event.leaderMessage()).append("\n");
-        }
-
         content.append("카테고리: ").append(event.category().getDisplayName()).append("\n");
-        content.append("난이도: ").append(event.level().getDescription());
+
+        //content.append("난이도: ").append(event.level().getDescription());
 
         return content.toString();
     }
@@ -189,10 +186,9 @@ public class StudyVectorService {
 
         content.append("커리큘럼: ").append(event.getCurriculum()).append("\n");
 
-        content.append("스터디장 메시지: ").append(event.getLeaderMessage()).append("\n");
-
         content.append("카테고리: ").append(event.getCategory().getDisplayName()).append("\n");
-        content.append("난이도: ").append(event.getLevel().getDescription());
+
+        //content.append("난이도: ").append(event.getLevel().getDescription());
 
         return content.toString();
     }

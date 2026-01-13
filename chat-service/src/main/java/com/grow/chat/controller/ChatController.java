@@ -46,7 +46,7 @@ public class ChatController {
            @RequestBody ChatRoomMemberRequest request) {
 
         log.info(request.toString());
-        ChatRoomResponse response = chatRoomService.createChatRoomMember(request.studyId(), request.roomId(), request.userId());
+        ChatRoomResponse response = chatRoomService.createChatRoomMember(request.studyId(), request.roomId(), request.userId(), request.nickname());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

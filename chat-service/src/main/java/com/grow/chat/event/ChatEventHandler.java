@@ -31,7 +31,7 @@ public class ChatEventHandler {
     )
     public void chatRoomMemberHandler(StudyCreateEvent event){
 
-        chatRoomService.createChatRoomMember(event.studyId(), event.userId());
+        chatRoomService.createChatRoomMember(event.studyId(), event.userId(),event.nickname());
 
     }
 

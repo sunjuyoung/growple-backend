@@ -177,6 +177,31 @@ public class PaymentService implements TossPayment {
     }
 
     /**
+     * 결제 취소 (paymentKey 기반 - SAGA 보상 트랜잭션용)
+     */
+    @Transactional
+    public PaymentResponse cancelByPaymentKey(String paymentKey, String cancelReason) {
+        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 결제입니다. paymentKey=" + paymentKey));
+
+        if (!payment.isCancellable()) {
+            throw new IllegalStateException("취소할 수 없는 상태입니다. status=" + payment.getStatus());
+        }
+
+        try {
+            // 토스페이먼츠 취소 API 호출
+            tossPaymentClient.cancel(paymentKey, cancelReason);
+            payment.cancel();
+            log.info("SAGA 보상 트랜잭션 - 결제 취소 완료: paymentKey={}, reason={}", paymentKey, cancelReason);
+        } catch (Exception e) {
+            log.error("SAGA 보상 트랜잭션 - 결제 취소 실패: paymentKey={}, error={}", paymentKey, e.getMessage());
+            throw new IllegalStateException("결제 취소에 실패했습니다.", e);
+        }
+
+        return PaymentResponse.from(payment);
+    }
+
+    /**
      * 결제 조회
      */
     public PaymentResponse getPayment(String orderId) {

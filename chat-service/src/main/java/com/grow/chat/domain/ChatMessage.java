@@ -32,6 +32,8 @@ public class ChatMessage extends AbstractEntity {
     @Column(name = "sender_id", nullable = false)
     private Long sender;
 
+    private String senderNickname;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 

@@ -33,6 +33,8 @@ public class ChatRoomMember extends AbstractEntity{
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
+    private String senderNickname;
+
     @Column
     private Long lastReadMessageId;
 
@@ -45,12 +47,15 @@ public class ChatRoomMember extends AbstractEntity{
 
 
     //생성메서드
-    public static ChatRoomMember of(ChatRoom chatRoom, Long memberId) {
+    public static ChatRoomMember of(ChatRoom chatRoom, Long memberId,String senderNickname) {
         return ChatRoomMember.builder()
                 .chatRoom(chatRoom)
                 .memberId(memberId)
+                .senderNickname(senderNickname)
                 .build();  // joinedAt은 @Builder.Default로 자동 설정
     }
+
+
 
     public void assignChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;

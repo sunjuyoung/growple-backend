@@ -18,4 +18,6 @@ public interface PaymentJpaRepository extends JpaRepository<Payment, Long> {
     List<Payment> findByStudyIdAndStatus(Long studyId, PaymentStatus status);
 
     boolean existsByMemberIdAndStudyIdAndStatus(Long memberId, Long studyId, PaymentStatus status);
+
+    Optional<Payment> findByPaymentKey(String paymentKey);
 }

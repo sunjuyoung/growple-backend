@@ -41,27 +41,27 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoomResponse createChatRoomMember(Long studyId, Long roomId, Long userId) {
+    public ChatRoomResponse createChatRoomMember(Long studyId, Long roomId, Long userId,String nickname) {
 
         ChatRoom chatRoom = chatRoomRepository.findByIdAndStudyId(roomId, studyId).orElseThrow();
 
-        ChatRoom savedRoom = getChatRoom(userId, chatRoom);
+        ChatRoom savedRoom = getChatRoom(userId, chatRoom,nickname);
 
         return ChatRoomResponse.from(savedRoom);
     }
 
     @Transactional
-    public ChatRoomResponse createChatRoomMember(Long studyId,  Long userId) {
+    public ChatRoomResponse createChatRoomMember(Long studyId,  Long userId,String nickname) {
 
         ChatRoom chatRoom = chatRoomRepository.findByStudyId(studyId).orElseThrow();
 
-        ChatRoom savedRoom = getChatRoom(userId, chatRoom);
+        ChatRoom savedRoom = getChatRoom(userId, chatRoom,nickname);
 
         return ChatRoomResponse.from(savedRoom);
     }
 
-    private ChatRoom getChatRoom(Long userId, ChatRoom chatRoom) {
-        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, userId);
+    private ChatRoom getChatRoom(Long userId, ChatRoom chatRoom,String nickname) {
+        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, userId,nickname);
 
         chatRoom.getMembers().add(chatRoomMember);
         chatRoomMember.assignChatRoom(chatRoom);
@@ -116,7 +116,7 @@ public class ChatRoomService {
     public ChatRoomResponse internalRequest(InternalRequest request) {
         ChatRoom chatRoom = createChatRoomEntity(request.studyId(), request.roomName());
 
-        ChatRoomMember chatRoomMember = addMember(chatRoom, request.userId());
+        ChatRoomMember chatRoomMember = addMember(chatRoom, request.userId(), request.nickname());
 
         chatRoomMemberRepository.save(chatRoomMember);
 
@@ -135,8 +135,8 @@ public class ChatRoomService {
         return chatRoomRepository.save(chatRoom);
     }
 
-    private ChatRoomMember addMember(ChatRoom chatRoom, Long userId) {
-        ChatRoomMember member = ChatRoomMember.of(chatRoom, userId);
+    private ChatRoomMember addMember(ChatRoom chatRoom, Long userId, String nickname) {
+        ChatRoomMember member = ChatRoomMember.of(chatRoom, userId, nickname);
         chatRoom.getMembers().add(member);
         member.assignChatRoom(chatRoom);
         return member;
