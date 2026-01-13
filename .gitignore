@@ -41,3 +41,5 @@ out/
 *-secret.yaml
 k8s/*-secret.yaml
 *.secret.yaml
+
+monitoring
