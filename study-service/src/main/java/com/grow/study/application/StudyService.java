@@ -123,40 +123,38 @@ public class StudyService implements StudyRegister {
     @Override
     public void enrollment(Long studyId, Long memberId, Integer depositAmount) {
 
-        Study study = studyRepository.findStudiesById(studyId)
-                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
         MemberSummaryResponse memberSummary = memberRestClient.getMemberSummary(memberId);
 
+        //  비관적 락으로 스터디 조회 (동시성 제어)
+        Study study = studyRepository.findByIdWithLock(studyId)
+                .orElseThrow(() -> new IllegalArgumentException("스터디를 찾을 수 없습니다."));
 
-        // 1. 참여 가능 여부 검증
+        //  참여 가능 여부 검증
         if (!study.isJoinable()) {
             throw new NonRetryableException("참여할 수 없는 스터디입니다.");
         }
 
-        // 2. 스터디장 본인 참여 방지
+        //  스터디장 본인 참여 방지
         if (study.isLeader(memberId)) {
             throw new NonRetryableException("스터디장은 이미 참여 중입니다.");
         }
 
-        // 3. 보증금 일치 여부 확인
+        // 5. 보증금 일치 여부 확인
         if (!study.getDepositAmount().equals(depositAmount)) {
             throw new NonRetryableException("보증금이 일치하지 않습니다.");
         }
 
-        // 4. 멤버 추가 (내부에서 중복 체크)
-        study.addMember(memberId, depositAmount,memberSummary.nickname());
-
+        // 6. 멤버 추가 (내부에서 중복 체크)
+        study.addMember(memberId, depositAmount, memberSummary.nickname());
 
         studyRepository.save(study);
 
         studyEventPublisher.publishStudyMember(
                 StudyCreateEvent.of(
-                        memberId,studyId,"studyMemberCreate",null,memberSummary.nickname()
+                        memberId, studyId, "studyMemberCreate", null, memberSummary.nickname()
                 )
         );
-
-
     }
 
     public void changeStudyStatus(Long studyId, Long leaderId) {

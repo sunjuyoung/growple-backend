@@ -21,6 +21,8 @@ public interface StudyRepository {
 
     Optional<Study> findStudiesById(Long studyId);
 
+    Optional<Study> findByIdWithLock(Long studyId);
+
     Optional<Study> findWithSchedule(@Param("studyId") Long studyId);
 
     Long countActiveMembers(@Param("studyId") Long studyId);

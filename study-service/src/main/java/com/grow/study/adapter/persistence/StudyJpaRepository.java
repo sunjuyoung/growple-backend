@@ -5,8 +5,10 @@ import com.grow.study.domain.study.Study;
 import com.grow.study.domain.study.StudyCategory;
 import com.grow.study.domain.study.StudyStatus;
 import com.grow.study.domain.study.StudyVisibility;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,6 +36,14 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long>, StudyRep
 
     @EntityGraph(attributePaths = {"members"})
     Optional<Study> findStudiesById(Long studyId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    SELECT s FROM Study s
+    LEFT JOIN FETCH s.members
+    WHERE s.id = :studyId
+    """)
+    Optional<Study> findByIdWithLock(@Param("studyId") Long studyId);
 
     @Query("""
     SELECT s FROM Study s

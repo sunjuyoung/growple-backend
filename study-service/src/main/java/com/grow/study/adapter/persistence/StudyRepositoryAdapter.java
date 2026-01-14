@@ -34,6 +34,11 @@ public class StudyRepositoryAdapter implements StudyRepository {
     }
 
     @Override
+    public Optional<Study> findByIdWithLock(Long studyId) {
+        return studyJpaRepository.findByIdWithLock(studyId);
+    }
+
+    @Override
     public Optional<Study> findWithSchedule(Long studyId) {
         return studyJpaRepository.findWithSchedule(studyId);
     }

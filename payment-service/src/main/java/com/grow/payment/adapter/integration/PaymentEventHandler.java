@@ -38,22 +38,18 @@ public class PaymentEventHandler {
     public void handleStudyEnrollmentFailed(RefundRequestEvent event) {
         // 멱등성 체크: 이미 처리된 이벤트인지 확인
         if (processedEventRepository.existsById(event.eventId())) {
-            log.info("이미 처리된 환불 이벤트 (멱등성 보장): eventId={}", event.eventId());
             return;
         }
-
-        log.info("SAGA 보상 트랜잭션 시작 - 스터디 등록 실패로 환불 처리: eventId={}, userId={}, studyId={}, paymentKey={}, reason={}",
-                event.eventId(), event.userId(), event.studyId(), event.paymentKey(), event.reason());
 
         try {
             paymentService.cancelByPaymentKey(event.paymentKey(), event.reason());
 
             // 처리 완료된 이벤트 저장
             processedEventRepository.save(ProcessedEvent.of(event.eventId(), "STUDY_ENROLLMENT_FAILED"));
-            log.info("SAGA 보상 트랜잭션 완료 - 환불 처리 성공: eventId={}, paymentKey={}", event.eventId(), event.paymentKey());
+            log.info(" 보상 트랜잭션 완료 - 환불 처리 성공: eventId={}, paymentKey={}", event.eventId(), event.paymentKey());
 
         } catch (Exception e) {
-            log.error("SAGA 보상 트랜잭션 실패 - 환불 처리 실패: eventId={}, paymentKey={}, error={}",
+            log.error(" 보상 트랜잭션 실패 - 환불 처리 실패: eventId={}, paymentKey={}, error={}",
                     event.eventId(), event.paymentKey(), e.getMessage());
             throw e; // RetryableTopic에 의해 재시도
         }
