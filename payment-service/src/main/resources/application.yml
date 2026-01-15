@@ -84,3 +84,18 @@ logging:
     root: INFO
     com.grow.payment: DEBUG
     org.springframework.batch: INFO
+
+# Actuator & Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

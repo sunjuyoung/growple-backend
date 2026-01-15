@@ -1,0 +1,63 @@
+# Prometheus 설정 파일 (로컬 개발 환경용)
+# localhost에서 Spring Boot 서비스들을 모니터링합니다
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'growple-local'
+    env: 'local'
+
+# 알림 규칙 파일
+rule_files:
+  - /etc/prometheus/alert-rules.yml
+
+# 메트릭 수집 대상 설정
+scrape_configs:
+  # Prometheus 자체 메트릭
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ============================================
+  # Spring Boot 애플리케이션 메트릭 (로컬)
+  # 각 서비스의 actuator/prometheus 엔드포인트
+  # ============================================
+  - job_name: 'spring-boot-apps'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # Discovery Service
+      - targets: ['host.docker.internal:8761']
+        labels:
+          application: 'discovery-service'
+          env: 'local'
+
+      # API Gateway
+      - targets: ['host.docker.internal:8080']
+        labels:
+          application: 'api-gateway'
+          env: 'local'
+
+      # Member Service
+      - targets: ['host.docker.internal:8081']
+        labels:
+          application: 'member-service'
+          env: 'local'
+
+      # Study Service
+      - targets: ['host.docker.internal:8082']
+        labels:
+          application: 'study-service'
+          env: 'local'
+
+      # Payment Service
+      - targets: ['host.docker.internal:8083']
+        labels:
+          application: 'payment-service'
+          env: 'local'
+
+      # Chat Service
+      - targets: ['host.docker.internal:8084']
+        labels:
+          application: 'chat-service'
+          env: 'local'

@@ -36,6 +36,10 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.4'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // Actuator & Prometheus
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     // Configuration Processor
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 

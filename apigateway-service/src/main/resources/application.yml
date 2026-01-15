@@ -105,3 +105,20 @@ logging:
   level:
     com.grow.apigateway: DEBUG
     org.springframework.cloud.gateway: INFO
+
+# Actuator & Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics, gateway
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+    gateway:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

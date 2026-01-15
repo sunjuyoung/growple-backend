@@ -1,0 +1,58 @@
+# Prometheus 알림 규칙 (로컬용)
+# 로컬에서는 주로 애플리케이션 알림만 사용
+
+groups:
+  # ============================================
+  # Spring Boot 애플리케이션 알림
+  # ============================================
+  - name: application-alerts
+    rules:
+      # 애플리케이션 다운
+      - alert: ApplicationDown
+        expr: up{job="spring-boot-apps"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "애플리케이션 다운"
+          description: "{{ $labels.application }} 서비스에 연결할 수 없습니다."
+
+      # HTTP 5xx 에러 급증
+      - alert: HighHttpErrorRate
+        expr: |
+          sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) by (application)
+          /
+          sum(rate(http_server_requests_seconds_count[5m])) by (application)
+          * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HTTP 5xx 에러율 증가"
+          description: "{{ $labels.application }}의 5xx 에러율이 {{ printf \"%.1f\" $value }}%입니다."
+
+      # 응답 시간 느림
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_server_requests_seconds_bucket[5m])) by (le, application)
+          ) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "응답 시간 지연"
+          description: "{{ $labels.application }}의 95th percentile 응답 시간이 {{ printf \"%.2f\" $value }}초입니다."
+
+      # JVM 힙 메모리 높음
+      - alert: HighJvmHeapUsage
+        expr: |
+          jvm_memory_used_bytes{area="heap"}
+          / jvm_memory_max_bytes{area="heap"}
+          * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JVM 힙 메모리 부족"
+          description: "{{ $labels.application }}의 JVM 힙 사용률이 {{ printf \"%.1f\" $value }}%입니다."
