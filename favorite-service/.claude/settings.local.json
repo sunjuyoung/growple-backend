@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test:*)",
+      "Bash(.gradlew.bat :favorite-service:test --tests \"com.grow.favorite.adapter.webapi.FavoriteApiTest\")"
+    ]
+  }
+}
