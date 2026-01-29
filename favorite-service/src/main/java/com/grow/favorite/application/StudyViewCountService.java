@@ -1,8 +1,8 @@
 package com.grow.favorite.application;
 
 
-import com.grow.favorite.adapter.persistence.StudyViewCountRepository;
-import com.grow.favorite.adapter.persistence.StudyViewRedisLockRepository;
+import com.grow.favorite.application.required.StudyViewCountPort;
+import com.grow.favorite.application.required.StudyViewLockPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,21 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StudyViewCountService {
 
-    private final StudyViewCountRepository studyViewCountRepository;
+    private final StudyViewCountPort studyViewCountPort;
     private final StudyViewCountBackUpProcessor studyViewCountBackUpProcessor;
-    private final StudyViewRedisLockRepository studyViewRedisLockRepository;
+    private final StudyViewLockPort studyViewLockPort;
 
     private static final int BACK_UP_BATCH_SIZE = 10;
 
     @Transactional
     public Long increase(Long studyId, Long userId){
 
-        if(!studyViewRedisLockRepository.viewLock(studyId,userId)){
-            return studyViewCountRepository.read(studyId);
+        if(!studyViewLockPort.viewLock(studyId,userId)){
+            return studyViewCountPort.read(studyId);
         }
 
 
-        Long count = studyViewCountRepository.increase(studyId);
+        Long count = studyViewCountPort.increase(studyId);
         if(count % BACK_UP_BATCH_SIZE == 0){
             studyViewCountBackUpProcessor.viewBackup(studyId, count);
         }
@@ -34,6 +34,6 @@ public class StudyViewCountService {
     }
 
     public Long count(Long articleId) {
-        return studyViewCountRepository.read(articleId);
+        return studyViewCountPort.read(articleId);
     }
 }

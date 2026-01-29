@@ -38,3 +38,5 @@ growple/
 
 ## Environment
 - `.env` 파일을 통한 환경변수 관리 (spring-dotenv)
+
+

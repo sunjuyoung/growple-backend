@@ -1,6 +1,7 @@
 package com.grow.favorite.adapter.persistence;
 
 
+import com.grow.favorite.application.required.StudyViewLockPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,12 +10,13 @@ import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
-public class StudyViewRedisLockRepository {
+public class StudyViewLockRepositoryAdapter implements StudyViewLockPort {
 
     private final StringRedisTemplate redisTemplate;
 
     private static final String KEY_FORMAT = "view::study::%s::user::%s::lock";
 
+    @Override
     public boolean viewLock(Long studyId, Long userId){
         return redisTemplate.opsForValue().setIfAbsent(generateKey(studyId,userId),"", Duration.ofMinutes(10));
     }

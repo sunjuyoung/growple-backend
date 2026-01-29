@@ -1,6 +1,6 @@
 package com.grow.favorite.application;
 
-import com.grow.favorite.adapter.persistence.StudyViewCountJpaRepository;
+import com.grow.favorite.application.required.StudyViewCountBackupPort;
 import com.grow.favorite.domain.view.StudyViewCount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StudyViewCountBackUpProcessor {
 
-    private final StudyViewCountJpaRepository studyViewCountJpaRepository;
+    private final StudyViewCountBackupPort studyViewCountBackupPort;
 
     public void viewBackup(Long studyId, Long viewCount){
 
-        int result = studyViewCountJpaRepository.updateViewCount(studyId, viewCount);
+        int result = studyViewCountBackupPort.updateViewCount(studyId, viewCount);
         if(result ==0){
-            studyViewCountJpaRepository.save(StudyViewCount.init(studyId,viewCount));
+            studyViewCountBackupPort.save(StudyViewCount.init(studyId,viewCount));
         }
     }
 }
